@@ -1,0 +1,88 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="pure-g">
+        <div class="pure-u-1-5"></div>
+        <div class="pure-u-3-5">
+            <h3>
+                Busqueda de Contratista
+            </h3>
+
+
+            {% if messages %}
+                {% for message in messages %}
+                    <aside>
+                        <p>
+                            {{message}}
+                        </p>
+                    </aside>
+                {% endfor  %}
+            {% endif %}
+
+            
+            <form class="pure-form">
+                <fieldset>
+                    <input type="text" id="txtBuscar" name="txtBuscar" placeholder="Buscar Item" />
+                    <button type="submit" class="pure-button pure-button-primary">Buscar</button>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                    <button type="button" class="pure-button pure-button" onclick="IrNuevoContratista()">Nueva Contratista</button>
+
+                    &nbsp;&nbsp;&nbsp;
+
+                </fieldset>
+            </form>  
+
+        </div>
+        <div class="pure-u-1-5"></div>
+    </div>
+
+    <br>
+    <br>
+    <br>
+
+    <div class="pure-g">
+        <div class="pure-u-3-24"></div>
+        <div class="pure-u-18-24">
+            <table class="pure-table pure-table-striped ">
+                <thead>
+                    <tr>
+                        <th>Descripcion</th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for resultado in resultados %}
+                        <tr>
+                            <td>{{resultado.descripcion.upper }}</td>
+                            <td>
+                                <a href="/editarcontratista/{{resultado.pk}} ">Editar</a></p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="pure-u-3-24"></div>
+    </div>
+        
+{% endblock %}
+
+{% block customjs %}
+
+    <script>
+        $( document ).ready(function() {
+            $("#txtBuscar").focus();
+        });
+
+        function IrNuevoContratista() {
+            window.location.replace("/nuevocontratista");
+        }
+
+    </script>
+
+{% endblock %}
+

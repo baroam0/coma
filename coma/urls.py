@@ -19,6 +19,8 @@ from django.urls import path
 
 from .views import inicio
 from apps.materiales.views import editarmaterial, listadomaterial, nuevomaterial
+from apps.contratistas.views import editarcontratista, listadocontratista, nuevocontratista
+from apps.ordenes.views import listadoorden, nuevaorden
 
 
 urlpatterns = [
@@ -27,4 +29,11 @@ urlpatterns = [
     path('editarmaterial/<int:pk>', editarmaterial),
     path('listadomaterial/', listadomaterial),
     path('nuevomaterial/', nuevomaterial),
+
+    path('editarcontratista/<int:pk>', editarcontratista),
+    path('listadocontratista/', listadocontratista),
+    path('nuevocontratista/', nuevocontratista),
+
+    path('listadoorden/', listadoorden),
+    path('nuevaorden/', nuevaorden),
 ]
