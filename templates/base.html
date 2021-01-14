@@ -1,0 +1,75 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.3/build/pure-min.css" integrity="sha384-cg6SkqEOCV1NbJoCu11+bm0NvBRc8IYLRGXkmNrqUBfTjmMYwNKPWBTIKyw9mHNJ" crossorigin="anonymous">
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.5.1.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+
+    <style scoped="">
+      .button-error,
+
+      .button-error {
+          background: rgb(202, 60, 60);
+          /* this is a maroon */
+      }
+
+      aside {
+        background: #1f8dd6;
+        margin: 1em 0;
+        padding: .3em 1em;
+        border-radius: 3px;
+        color: #fff;
+      }
+
+    </style>
+
+  </head>
+
+  <div class="pure-menu pure-menu-horizontal">
+    <ul class="pure-menu-list">
+        
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+          <a href="#" id="menuLink2" class="pure-menu-link">Materiales</a>
+          <ul class="pure-menu-children">
+              <li class="pure-menu-item">
+                  <a href="/listadomaterial" class="pure-menu-link">Buscar</a>
+              </li>
+          </ul>
+        </li>
+
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+          <a href="#" id="menuLink3" class="pure-menu-link">Stock</a>
+          <ul class="pure-menu-children">
+              <li class="pure-menu-item">
+                  <a href="/stocklistado" class="pure-menu-link">Buscar</a>
+              </li>
+          </ul>
+        </li>
+
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+          <a href="#" id="menuLink3" class="pure-menu-link">Operaciones</a>
+          <ul class="pure-menu-children">
+              <li class="pure-menu-item">
+                  <a href="/operacionlistado" class="pure-menu-link">Buscar</a>
+              </li>
+          </ul>
+        </li>
+
+    </ul>
+  </div>
+
+  <body>
+    {% block content %}
+    {% endblock %}
+  </body>
+
+  {% block customjs %}
+  {% endblock %}
+
+
+</html>
