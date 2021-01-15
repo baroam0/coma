@@ -3,6 +3,7 @@ from django.db import models
 
 from apps.contratistas.models import Contratista
 from apps.materiales.models import Material
+from apps.obras.models import Obra
 
 
 class Unidad(models.Model):
@@ -19,9 +20,10 @@ class Orden(models.Model):
     fecha = models.DateField(null=False)
     contratista = models.ForeignKey(Contratista, on_delete=models.CASCADE)
     encargado = models.CharField(max_length=100, null=False, blank=False)
+    obra = models.ForeignKey(Obra, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
-        return str(self.fecha)
+        return str(self.pk) + " - " + str(self.fecha)
     
     class Meta:
         verbose_name_plural="Operaciones"

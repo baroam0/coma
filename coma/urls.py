@@ -20,7 +20,7 @@ from django.urls import path
 from .views import inicio
 from apps.materiales.views import editarmaterial, listadomaterial, nuevomaterial
 from apps.contratistas.views import editarcontratista, listadocontratista, nuevocontratista
-from apps.ordenes.views import listadoorden, nuevaorden
+from apps.ordenes.views import ajaxgrabarorden, listadoorden, nuevaorden
 
 
 urlpatterns = [
@@ -36,4 +36,6 @@ urlpatterns = [
 
     path('listadoorden/', listadoorden),
     path('nuevaorden/', nuevaorden),
+
+    path('ajaxgrabarorden/', ajaxgrabarorden),
 ]

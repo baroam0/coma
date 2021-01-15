@@ -1,9 +1,11 @@
 
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Orden, Unidad
 from apps.contratistas.models import Contratista
 from apps.materiales.models import Material
+from apps.obras.models import Obra
 
 
 def listadoorden(request):
@@ -25,6 +27,7 @@ def nuevaorden(request):
     contratistas = Contratista.objects.all()
     materiales = Material.objects.all().order_by("descripcion")
     unidades = Unidad.objects.all().order_by("descripcion")
+    obras = Obra.objects.all().order_by("descripcion")
 
     return render(
         request,
@@ -32,9 +35,15 @@ def nuevaorden(request):
         {
             "contratistas": contratistas,
             "materiales": materiales,
+            "obras": obras,
             "unidades": unidades
         }
     )
+
+
+@csrf_exempt
+def ajaxgrabarorden(request):
+    fecha = request.POST["fecha"]
     
 
 # Create your views here.

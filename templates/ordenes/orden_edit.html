@@ -20,6 +20,14 @@
                             </option>
                         {% endfor%}
                     </select>
+
+                    <select id="selectObras">
+                        {% for obra in obras %}
+                            <option value={{obra.pk}}>
+                                {{obra.descripcion.upper}}
+                            </option>
+                        {% endfor%}
+                    </select>
                     
                     <input type="text" id="txtEncargado" class="pure-input-1" placeholder="Encargado" />
                     
@@ -71,7 +79,7 @@
                 <br>
 
                 <fieldset class="pure-group">
-                    <button type="submit" class="pure-button pure-button-primary">Aceptar</button>
+                    <button type="button" class="pure-button pure-button-primary" onclick="vertabla()">Aceptar</button>
                     &nbsp; &nbsp; &nbsp;
                     <button type="button" class="pure-button" onclick="IrListadoMaterial()">Cancelar</button>
                 </fieldset>
@@ -87,13 +95,16 @@
 
         <script>
 
+            $(document).ready(function () {
+                $("#txtFecha").val((new Date()).toLocaleDateString('es-AR'));
+            });
+
             function getSelectedText(elementId) {
                 var elt = document.getElementById(elementId);
                 if (elt.selectedIndex == -1)
                     return null;
                 return elt.options[elt.selectedIndex].text;
             }
-
 
             function IrListadoMaterial() {
                 window.location.replace("/listadomaterial");
@@ -107,7 +118,7 @@
                 if(cantidad==""){
                     cantidad = 1
                 }
-                
+
                 var unidad = getSelectedText("selectUnidad")
 
                 contenido = "<tr id='" + material_id +  "'>";
@@ -118,6 +129,60 @@
                 contenido = contenido + "</tr>";
                 $("#tblMateriales tbody").append(contenido);
                 
+            }
+
+            function QuitarFila(id){
+                var fila = document.getElementById(id);
+                $("#" + fila.id + "").remove();
+            }
+
+            function GrabarOrden(){
+                var fecha = $("#txtFecha").val();
+                var contratista = $("#selectMaterial").val();
+                var encargado = $("#txtEncargado").val();
+                var obra = $("#selectObras").val()
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ajaxgrabarorden/",
+                    data: {
+                        "fecha": fecha,
+                        "contratista": contratista,
+                        "encargado": encargado,
+                        "obra": obra
+                    },
+                    success: function (response) {
+                        console.log(response);
+                    }
+                });
+            }
+
+
+            function vertabla(){
+
+                var tabla = document.getElementById('tblMateriales');
+                var rowLength = tabla.rows.length;
+
+                for(var i=1; i<rowLength; i+=1){
+                    var indice = toString(i);
+                    var row = tabla.rows[i];
+                    var cellLength = row.cells.length;
+                    for(var y=0; y<cellLength; y+=1){
+                        var cell = row.cells[y];
+
+                        if(y==1){
+                            cantidad=cell.innerHTML;
+
+                            console.log("id-");
+                            console.log(row.id);
+
+                            console.log("cantidad");
+                            console.log(cantidad);
+
+                        }
+
+                    }
+                }
             }
 
 
