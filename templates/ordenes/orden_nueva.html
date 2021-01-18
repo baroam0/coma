@@ -6,7 +6,7 @@
         <div class="pure-u-1-24"></div>
         <div class="pure-u-22-24">
             <h3 align="center">
-                Detalle Orden Numero {{orden.pk}}
+                Detalle Orden
             </h3>
 
             <form class="pure-form">
@@ -15,44 +15,27 @@
 
                     <select id="selectContratista">
                         {% for contratista in contratistas %}
-                            {% if contratista.pk == orden.contratista.pk %}
-                                <option value={{contratista.pk}} selected>
-                                    {{contratista.descripcion.upper}}
-                                </option>
-                            {% else %}
-                                <option value={{contratista.pk}}>
-                                    {{contratista.descripcion.upper}}
-                                </option>
-                            {% endif %}
+                            <option value={{contratista.pk}}>
+                                {{contratista.descripcion.upper}}
+                            </option>
                         {% endfor%}
                     </select>
 
                     <select id="selectObras">
                         {% for obra in obras %}
-                            {% if obra.pk == orden.obra.pk%}
-                                <option value={{obra.pk}} selected>
-                                    {{obra.descripcion.upper}}
-                                </option>   
-                            {% else%}
-                                <option value={{obra.pk}}>
-                                    {{obra.descripcion.upper}}
-                                </option>
-                            {% endif %}
+                            <option value={{obra.pk}}>
+                                {{obra.descripcion.upper}}
+                            </option>
                         {% endfor%}
                     </select>
                     
-                    <input type="text" id="txtEncargado" class="pure-input-1" placeholder="Encargado" value="{{orden.encargado}}" />
+                    <input type="text" id="txtEncargado" class="pure-input-1" placeholder="Encargado" />
                     
                 </fieldset>
 
 
                 <fieldset class="pure-group">
                     <select id="selectMaterial">
-                        {% for material in materiales %}
-                            <option value={{material.pk}}>
-                                {{material.descripcion}}
-                            </option>
-                        {% endfor%}
                     </select>
 
                     <input type="text" id="txtCantidad" class="pure-input-1-2" placeholder="Cantidad" />
@@ -83,14 +66,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for detalle in detallesorden %}
-                                <tr id='{{detalle.material.pk}}'>
-                                    <td>{{detalle.material.descripcion.upper}}</td>
-                                    <td>{{detalle.cantidad}}</td>
-                                    <td id='{{detalle.unidad.pk}}'>{{detalle.unidad.descripcion}}</td>
-                                    <td><button type='button' onclick='QuitarFila({{detalle.material.pk}})'>Quitar</button></td>
-                                </tr>
-                            {% endfor %}
                         </tbody>
                     </table>
                 </fieldset>
@@ -115,8 +90,8 @@
 
         <script>
 
-            $(document).ready(function () { 
-                $("#txtFecha").val("{{orden.fecha|date:"SHORT_DATE_FORMAT"}}");
+            $(document).ready(function () {
+                $("#txtFecha").val((new Date()).toLocaleDateString('es-AR'));
             });
 
 
@@ -205,7 +180,7 @@
                         var cell = row.cells[y];
 
                         if(y==1){
-                            var cantidad=parseFloat(cell.innerHTML);
+                            var cantidad=cell.innerHTML;
                             var idmaterial = row.id;
                             arraycantidad.push(cantidad);
                             arraymaterial.push(idmaterial);
@@ -220,7 +195,7 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/ajaxgrabareditarorden/{{orden.pk}}",
+                    url: "/ajaxgrabarorden/",
                     data: {
                         "fecha": fecha,
                         "contratista": contratista,

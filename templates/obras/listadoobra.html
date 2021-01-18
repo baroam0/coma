@@ -7,7 +7,7 @@
         <div class="pure-u-1-5"></div>
         <div class="pure-u-3-5">
             <h3>
-                Busqueda de Ordenes
+                Busqueda de Obras
             </h3>
 
 
@@ -29,7 +29,7 @@
 
                     &nbsp;&nbsp;&nbsp;
 
-                    <button type="button" class="pure-button pure-button" onclick="IrNuevaOrden()">Nueva Orden</button>
+                    <button type="button" class="pure-button pure-button" onclick="IrNuevoMaterial()">Nueva Obra </button>
 
                     &nbsp;&nbsp;&nbsp;
 
@@ -50,22 +50,16 @@
             <table class="pure-table pure-table-striped ">
                 <thead>
                     <tr>
-                        <th>Numero</th>
-                        <th>Fecha</th>
+                        <th>Descripcion</th>
                         <th>Editar</th>
-                        <th>Imprimir</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for resultado in resultados %}
                         <tr>
-                            <td>{{resultado.pk }}</td>
-                            <td>{{resultado.fecha }}</td>
+                            <td>{{resultado.descripcion.upper }}</td>
                             <td>
-                                <a href="/editarorden/{{resultado.pk}} ">Editar</a></p>
-                            </td>
-                            <td>
-                                <a href="/imprimirorden/{{resultado.pk}} " target="_blank">Imprimir</a></p>
+                                <a href="/editarobra/{{resultado.pk}} ">Editar</a></p>
                             </td>
                         </tr>
                     {% endfor %}
@@ -84,8 +78,8 @@
             $("#txtBuscar").focus();
         });
 
-        function IrNuevaOrden() {
-            window.location.replace("/nuevaorden");
+        function IrNuevoMaterial() {
+            window.location.replace("/nuevaobra");
         }
 
     </script>

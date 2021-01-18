@@ -46,7 +46,7 @@ def editarcontratista(request, pk):
         else:
             return render(request, 'contratistas/contratista_edit.html', {"form": form})
     else:
-        form = MaterialForm(instance=consulta)
+        form = ContratistaForm(instance=consulta)
         return render(request,
             'contratistas/contratista_edit.html',
             {"form": form}

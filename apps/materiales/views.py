@@ -1,5 +1,6 @@
 
 from django.contrib import messages
+from django.http import JsonResponse 
 from django.shortcuts import render, redirect
 
 from .models import Material
@@ -51,6 +52,24 @@ def editarmaterial(request, pk):
             'materiales/material_edit.html',
             {"form": form}
         )
+
+
+def ajaxmaterial(request):
+    parametro = request.GET.get('term')
+    material = Material.objects.filter(descripcion__icontains=parametro)
+
+    dict_tmp = dict()
+    list_tmp = list()
+
+    if len(material) > 0:
+        for i in material:
+            dict_tmp["id"] = i.pk
+            dict_tmp["text"] = i.descripcion.upper()
+            list_tmp.append(dict_tmp)
+            dict_tmp = dict()
+
+    return JsonResponse(list_tmp, safe=False)
+
 
 
 # Create your views here.

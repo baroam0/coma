@@ -1,3 +1,4 @@
+
 """coma URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -18,9 +19,11 @@ from django.contrib import admin
 from django.urls import path
 
 from .views import inicio
-from apps.materiales.views import editarmaterial, listadomaterial, nuevomaterial
+from apps.materiales.views import ajaxmaterial, editarmaterial, listadomaterial, nuevomaterial
 from apps.contratistas.views import editarcontratista, listadocontratista, nuevocontratista
-from apps.ordenes.views import ajaxgrabarorden, listadoorden, nuevaorden
+from apps.obras.views import listadoobra, editarobra, nuevaobra
+from apps.ordenes.views import (ajaxgrabarorden, ajaxgrabareditarorden,
+    listadoorden, nuevaorden, editarorden, imprimirorden)
 
 
 urlpatterns = [
@@ -29,6 +32,7 @@ urlpatterns = [
     path('editarmaterial/<int:pk>', editarmaterial),
     path('listadomaterial/', listadomaterial),
     path('nuevomaterial/', nuevomaterial),
+    path('ajaxmaterial/', ajaxmaterial),
 
     path('editarcontratista/<int:pk>', editarcontratista),
     path('listadocontratista/', listadocontratista),
@@ -36,6 +40,13 @@ urlpatterns = [
 
     path('listadoorden/', listadoorden),
     path('nuevaorden/', nuevaorden),
+    path('editarorden/<int:pk>', editarorden),
+    path('imprimirorden/<int:pk>', imprimirorden),
 
     path('ajaxgrabarorden/', ajaxgrabarorden),
+    path('ajaxgrabareditarorden/<int:pk>', ajaxgrabareditarorden),
+
+    path('listadoobra/', listadoobra),
+    path('editarobra/<int:pk>', editarobra),
+    path('nuevaobra/', nuevaobra),
 ]
