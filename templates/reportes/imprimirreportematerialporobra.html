@@ -1,0 +1,75 @@
+
+<html>
+
+	<style>
+		div {
+			text-align: justify;
+			text-justify: inter-word;
+		}
+
+		h3 {
+			text-align: center;
+			text-justify: inter-word;
+		}
+
+		table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+			text-align: center;
+        }
+	</style>
+	
+	<body>
+
+		<div class="page">
+			<br>
+			<br>
+			<br>
+			<br>
+
+			<h3> CANTIDADES DE MATERIALES </h3>
+			<br>
+
+			<table style="width:100%">
+				<tr>
+					Destino:<b> {{obra.descripcion.upper}} </b>
+				</tr>
+				<br>
+				<br>
+				
+			</table>
+
+
+
+			<table style="width:100%">
+				<thead>
+					<th>Material</th>
+					<th>Cantidad</th>
+					<th>Unidad</th>
+				</thead>
+
+				{% for detalleorden in detallesordenes%}
+					<tr>
+						<td>{{detalleorden.material__descripcion}}</td>
+						<td>{{detalleorden.cant}}</td>
+						<td>{{detalleorden.unidad__descripcion}}  </td>
+					</tr>
+				{%endfor%}
+
+			</table>
+
+			<br>
+  
+		</div>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
