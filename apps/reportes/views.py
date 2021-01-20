@@ -3,10 +3,21 @@
 from django.db.models import Sum
 from django.shortcuts import render
 
-
+from apps.contratistas.models import Contratista
 from apps.obras.models import Obra
 from apps.ordenes.models import Orden, DetalleOrden
 
+
+
+def listadomaterialporcooperativa(request):
+    contratistas = Contratista.objects.all()
+    return render(
+        request,
+        "reportes/listado_materialporcooperativa.html",
+        {
+            "contratistas": contratistas
+        }
+    )
 
 def listadomaterialporobra(request):
     obras = Obra.objects.all()
@@ -18,15 +29,35 @@ def listadomaterialporobra(request):
         }
     )
 
+
+def reportematerialporcooperativa(request, pk):
+    contratista = Contratista.objects.get(pk=pk)
+    orden = Orden.objects.filter(contratista=contratista.pk)
+    detallesordenes = DetalleOrden.objects.filter(orden=orden)
+
+    detallesordenes = DetalleOrden.objects.values(
+        'orden__obra__descripcion', 'material__descripcion', 'unidad__descripcion').annotate(
+            cant=Sum('cantidad'))
+
+    print(detallesordenes)
+    return render(
+        request,
+        "reportes/imprimirreportematerialporcooperativa.html",
+        {
+            "contratista": contratista,
+            "detallesordenes": detallesordenes,
+        }
+    )
+
+
 def reportematerialporobra(request, pk):
     obra = Obra.objects.get(pk=pk)
     orden = Orden.objects.filter(obra=obra.pk)
     detallesordenes = DetalleOrden.objects.filter(orden=orden)
 
-    detallesordenes = DetalleOrden.objects.values('unidad__descripcion','material__descripcion').annotate(cant=Sum('cantidad')).order_by('material')
-    
-
-    print(detallesordenes)
+    detallesordenes = DetalleOrden.objects.values(
+        'unidad__descripcion','material__descripcion').annotate(
+            cant=Sum('cantidad')).order_by('material')
 
     return render(
         request,
@@ -36,6 +67,3 @@ def reportematerialporobra(request, pk):
             "obra": obra
         }
     )
-
-    
-

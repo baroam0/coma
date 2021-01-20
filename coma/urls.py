@@ -24,7 +24,7 @@ from apps.contratistas.views import editarcontratista, listadocontratista, nuevo
 from apps.obras.views import listadoobra, editarobra, nuevaobra
 from apps.ordenes.views import (ajaxgrabarorden, ajaxgrabareditarorden,
     listadoorden, nuevaorden, editarorden, imprimirorden)
-from apps.reportes.views import listadomaterialporobra, reportematerialporobra
+from apps.reportes.views import listadomaterialporcooperativa, listadomaterialporobra, reportematerialporobra, reportematerialporcooperativa
 
 
 urlpatterns = [
@@ -51,6 +51,9 @@ urlpatterns = [
     path('editarobra/<int:pk>', editarobra),
     path('nuevaobra/', nuevaobra),
 
+    path('listadomaterialporcooperativa/', listadomaterialporcooperativa),
     path('listadomaterialporobra/', listadomaterialporobra),
+    path('reportematerialporcooperativa/<int:pk>', reportematerialporcooperativa),
     path('reportematerialporobra/<int:pk>', reportematerialporobra),
+    
 ]

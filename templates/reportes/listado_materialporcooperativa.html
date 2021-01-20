@@ -7,7 +7,7 @@
         <div class="pure-u-1-5"></div>
         <div class="pure-u-3-5">
             <h3>
-                Busqueda de Materiales
+                Reporte de Materiales por Cooperativa
             </h3>
 
 
@@ -24,14 +24,15 @@
             
             <form class="pure-form">
                 <fieldset>
-                    <input type="text" id="txtBuscar" name="txtBuscar" placeholder="Buscar Item" />
-                    <button type="submit" class="pure-button pure-button-primary">Buscar</button>
-
-                    &nbsp;&nbsp;&nbsp;
-
-                    <button type="button" class="pure-button pure-button" onclick="IrNuevoMaterial()">Nuevo Material</button>
-
-                    &nbsp;&nbsp;&nbsp;
+                    <select id="selectContratista">
+                        {% for contratista in contratistas %}
+                            <option value={{contratista.pk}}>
+                                {{contratista.descripcion.upper}}
+                            </option>
+                        {% endfor%}
+                    </select>
+                    
+                    <button type="button" class="pure-button pure-button-primary" onclick="GenerarReporte()">Generar Reporte</button>
 
                 </fieldset>
             </form>  
@@ -47,24 +48,6 @@
     <div class="pure-g">
         <div class="pure-u-3-24"></div>
         <div class="pure-u-18-24">
-            <table class="pure-table pure-table-striped ">
-                <thead>
-                    <tr>
-                        <th>Descripcion</th>
-                        <th>Editar</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for resultado in resultados %}
-                        <tr>
-                            <td>{{resultado.descripcion.upper }}</td>
-                            <td>
-                                <a href="/editarmaterial/{{resultado.pk}} ">Editar</a></p>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
         <div class="pure-u-3-24"></div>
     </div>
@@ -75,11 +58,13 @@
 
     <script>
         $( document ).ready(function() {
-            $("#txtBuscar").focus();
+            
         });
 
-        function IrNuevoMaterial() {
-            window.location.replace("/nuevomaterial");
+        function GenerarReporte() {
+
+            var idcontratista = $("#selectContratista").val();
+            window.open('/reportematerialporcooperativa/' + idcontratista, '_blank');
         }
 
     </script>

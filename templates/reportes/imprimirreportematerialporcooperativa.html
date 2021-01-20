@@ -27,22 +27,12 @@
 			<br>
 			<br>
 
-			<h3> CANTIDADES DE MATERIALES {{obra.descripcion.upper}}  </h3>
+			<h3> CANTIDADES DE MATERIALES {{contratista}} </h3>
 			<br>
 
 			<table style="width:100%">
-				<tr>
-					
-				</tr>
-				<br>
-				<br>
-				
-			</table>
-
-
-
-			<table style="width:100%">
 				<thead>
+					<th>Obra</th>
 					<th>Material</th>
 					<th>Cantidad</th>
 					<th>Unidad</th>
@@ -50,6 +40,7 @@
 
 				{% for detalleorden in detallesordenes%}
 					<tr>
+						<td>{{detalleorden.orden__obra__descripcion.upper}}</td>
 						<td>{{detalleorden.material__descripcion}}</td>
 						<td>{{detalleorden.cant}}</td>
 						<td>{{detalleorden.unidad__descripcion}}  </td>
@@ -57,6 +48,8 @@
 				{%endfor%}
 
 			</table>
+
+			
 
 			<br>
   
