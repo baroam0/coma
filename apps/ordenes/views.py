@@ -1,5 +1,6 @@
 
 
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -17,7 +18,17 @@ def listadoorden(request):
     if "txtBuscar" in request.GET:
         parametro = request.GET.get("txtBuscar")
         if parametro!="":
-            resultados = Orden.objects.filter(pk=int(parametro)).order_by("fecha")
+            if parametro.isnumeric():
+                try:
+                    resultados = Orden.objects.get(
+                        pk=int(parametro)
+                    )
+                except:
+                    resultados=None
+            else:
+                resultados = Orden.objects.filter(
+                    Q(obra__descripcion__icontains=parametro) |
+                    Q(contratista__descripcion__icontains=parametro)).order_by("fecha")
         else:
             resultados = Orden.objects.all().order_by("fecha")
 

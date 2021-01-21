@@ -52,6 +52,8 @@
                     <tr>
                         <th>Numero</th>
                         <th>Fecha</th>
+                        <th>Contratista</th>
+                        <th>Obra</th>
                         <th>Editar</th>
                         <th>Imprimir</th>
                     </tr>
@@ -61,6 +63,8 @@
                         <tr>
                             <td>{{resultado.pk }}</td>
                             <td>{{resultado.fecha }}</td>
+                            <td>{{resultado.contratista.descripcion.upper }}</td>
+                            <td>{{resultado.obra.descripcion.upper }}</td>
                             <td>
                                 <a href="/editarorden/{{resultado.pk}} ">Editar</a></p>
                             </td>

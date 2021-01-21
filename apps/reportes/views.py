@@ -1,6 +1,6 @@
 
 
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.shortcuts import render
 
 from apps.contratistas.models import Contratista
