@@ -33,11 +33,9 @@ def listadomaterialporobra(request):
 def reportematerialporcooperativa(request, pk):
     contratista = Contratista.objects.get(pk=pk)
     orden = Orden.objects.filter(contratista=contratista.pk)
-    detallesordenes = DetalleOrden.objects.filter(orden=orden)
-
-    detallesordenes = DetalleOrden.objects.values(
-        'orden__obra__descripcion', 'material__descripcion', 'unidad__descripcion').annotate(
-            cant=Sum('cantidad'))
+    detallesordenes = DetalleOrden.objects.filter(
+        orden__in=orden).values(
+            'orden__obra__descripcion', 'material__descripcion', 'unidad__descripcion').annotate(cant=Sum('cantidad'))
 
     print(detallesordenes)
     return render(
