@@ -34,6 +34,7 @@ class DetalleOrden(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE)
+    faltante = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.orden)

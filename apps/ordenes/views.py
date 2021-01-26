@@ -135,6 +135,7 @@ def ajaxgrabareditarorden(request,pk):
     arraymaterial = request.POST.getlist('arraymaterial[]')
     arrayunidad = request.POST.getlist('arrayunidad[]')
     arraycantidad = request.POST.getlist('arraycantidad[]')
+    arrayfaltante = request.POST.getlist('arrayfaltante[]')
 
     orden = Orden.objects.get(pk=pk)
 
@@ -148,7 +149,7 @@ def ajaxgrabareditarorden(request,pk):
 
     orden = Orden.objects.get(pk=pk)
 
-    for (material, unidad, cantidad) in zip(arraymaterial, arrayunidad, arraycantidad):
+    for (material, unidad, cantidad, faltante) in zip(arraymaterial, arrayunidad, arraycantidad, arrayfaltante):
         material = Material.objects.get(pk=int(material))
         unidad = Unidad.objects.get(pk=int(unidad))
 
@@ -156,8 +157,10 @@ def ajaxgrabareditarorden(request,pk):
             orden=orden,
             material=material,
             cantidad=cantidad,
-            unidad=unidad
+            unidad=unidad,
+            faltante=faltante
         )
+        print(detalleorden)
 
         detalleorden.save()
 
