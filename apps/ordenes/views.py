@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import DetalleOrden, Orden, Unidad 
+from .models import DetalleOrden, Orden, Unidad
 from apps.contratistas.models import Contratista
 from apps.materiales.models import Material
 from apps.obras.models import Obra
@@ -20,7 +20,7 @@ def listadoorden(request):
         if parametro!="":
             if parametro.isnumeric():
                 try:
-                    resultados = Orden.objects.get(
+                    resultados = Orden.objects.filter(
                         pk=int(parametro)
                     )
                 except:
