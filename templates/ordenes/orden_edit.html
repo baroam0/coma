@@ -79,15 +79,23 @@
                                 <th>Material</th>
                                 <th>Cantidad</th>
                                 <th>Unidad</th>
+                                <th>Faltante</th>
                                 <th>Quitar</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for detalle in detallesorden %}
                                 <tr id='{{detalle.material.pk}}'>
-                                    <td>{{detalle.material.descripcion.upper}}</td>
-                                    <td>{{detalle.cantidad}}</td>
+                                    <td>{{ detalle.material.descripcion.upper }}</td>
+                                    <td>{{ detalle.cantidad }}</td>
                                     <td id='{{detalle.unidad.pk}}'>{{detalle.unidad.descripcion}}</td>
+                                    <td>
+                                        {% if detalle.faltante == True %}
+                                            <input type='checkbox' value=1 id="chk_{{detalle.material.pk}}" checked>
+                                        {% else %}
+                                            <input type='checkbox' value=0 id="chk_{{detalle.material.pk}}" >
+                                        {% endif %}
+                                    </td>
                                     <td><button type='button' onclick='QuitarFila({{detalle.material.pk}})'>Quitar</button></td>
                                 </tr>
                             {% endfor %}
@@ -195,10 +203,13 @@
                 var arrayunidad = [];
                 var arraycantidad = [];
 
+                var arrayfaltante = [];
+            
+
                 var tabla = document.getElementById('tblMateriales');
                 var rowLength = tabla.rows.length;
                 for(var i=1; i<rowLength; i+=1){
-                    var indice = toString(i);
+                    //var indice = toString(i);
                     var row = tabla.rows[i];
                     var cellLength = row.cells.length;
                     for(var y=0; y<cellLength; y+=1){
@@ -214,10 +225,25 @@
                             var idunidad=cell.id;
                             arrayunidad.push(idunidad);
                         }
+                        if(y==3){
+                            var idcheckfaltante = "chk_" + row.id;
+                            var elemento = document.getElementById(idcheckfaltante);
+
+                            var valorFaltante = "";
+
+                            if(elemento.checked==true){
+                                valorFaltante = 1
+                                arrayfaltante.push(valorFaltante);
+                            }else{
+                                valorFaltante = 0
+                                arrayfaltante.push(valorFaltante);
+                            }
+                        }
+
                     }
 
                 }
-
+                
                 $.ajax({
                     type: "POST",
                     url: "/ajaxgrabareditarorden/{{orden.pk}}",
@@ -229,6 +255,7 @@
                         "arraymaterial": arraymaterial,
                         "arrayunidad": arrayunidad,
                         "arraycantidad": arraycantidad,
+                        "arrayfaltante": arrayfaltante
                     },
                     success: function (response) {
                         if(response.status==200){
@@ -239,6 +266,7 @@
                         }
                     }
                 });
+                
             }
 
             function RecorrerTabla(idorden){

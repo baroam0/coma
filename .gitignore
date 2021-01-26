@@ -3,3 +3,4 @@
 /coma/settings.py
 db.sqlite3
 *.pyc 
+dbdev.sqlite3
