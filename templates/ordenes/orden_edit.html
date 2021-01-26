@@ -182,6 +182,8 @@
                 contenido = contenido + "<td>"+ material +"</td>";
                 contenido = contenido + "<td>" + cantidad + "</td>";
                 contenido = contenido + "<td id='" + id_unidad + "'>" + unidad + "</td>";
+                contenido = contenido + "<td> <input type='checkbox' value=0 id='" + "chk_" + material_id + "'>";
+
                 contenido = contenido + "<td><button type='button' onclick='QuitarFila(" + material_id + ")'>Quitar</button></td>"
                 contenido = contenido + "</tr>";
                 $("#tblMateriales tbody").append(contenido);
