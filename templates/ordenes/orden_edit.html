@@ -2,6 +2,47 @@
 
 {% block content %}
 
+    <style>
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            padding-top: 100px; /* Location of the box */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    </style>
+
     <div class="pure-g">
         <div class="pure-u-1-24"></div>
         <div class="pure-u-22-24">
@@ -54,6 +95,8 @@
                             </option>
                         {% endfor%}
                     </select>
+
+                    <button type="button" id="btnnuevomaterial" class="pure-button">Nuevo material </button>
 
                     <input type="text" id="txtCantidad" class="pure-input-1-2" placeholder="Cantidad" />
 
@@ -115,7 +158,35 @@
 
             </form>
         </div>
-        <div class="pure-u-1-3"></div>
+        <div class="pure-u-1-3">
+
+            <div id="myModal" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                  <span class="close">&times;</span>
+
+                  <form class="pure-form" method="POST"><input type="hidden" name="csrfmiddlewaretoken" value="IFBwT9U5Rn0EflsdG79tL55fZNAchHHkg760DHBs4k1srY4nvGmWob9KBsnMTXh8">
+                        <fieldset class="pure-group">
+                            
+                            <label for="aligned-name">Descripcion</label>
+                            <input type="text" name="descripcion" class="pure-input-1" required id="id_descripcion">
+                            <span class="pure-form-message-inline">Este dato es requerido.</span>
+                            <br>
+                            <br>
+        
+                            <div class="pure-controls">
+                                <button id="btnguardamaterial" type="button" class="pure-button pure-button-primary">Aceptar</button>
+                                &nbsp; &nbsp; &nbsp;
+                            </div>
+                        </fieldset>
+                    </form>
+
+
+                  
+                </div>  
+            </div>
+
+        </div>
     </div>
 
     {% block customjs %}
@@ -125,7 +196,22 @@
 
             $(document).ready(function () { 
                 $("#txtFecha").val("{{orden.fecha|date:"SHORT_DATE_FORMAT"}}");
+
+                var btn = document.getElementById("btnnuevomaterial");
+                var modal = document.getElementById("myModal");
+                var span = document.getElementsByClassName("close")[0];
+                
+
+                btn.onclick = function() {
+                    modal.style.display = "block";
+                }
+
+                span.onclick = function() {
+                    modal.style.display = "none";
+                }
+
             });
+
 
 
             $('#selectMaterial').select2({
