@@ -1,7 +1,9 @@
 
+
 from django.contrib import messages
 from django.http import JsonResponse 
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Material
 from .forms import MaterialForm
@@ -70,6 +72,25 @@ def ajaxmaterial(request):
 
     return JsonResponse(list_tmp, safe=False)
 
+
+@csrf_exempt
+def ajaxgrabamaterial(request):
+    material = request.POST["material"]
+
+    try:
+        grabamaterial = Material(descripcion=material)
+        grabamaterial.save()
+        respuesta={
+            "status": 200,
+            "descripcion": "Se ha grabado el material"
+        }
+    except:
+        respuesta={
+            "status": 500,
+            "descripcion": "No se puede guardar el material"
+        }
+
+    return JsonResponse(respuesta, safe=False)
 
 
 # Create your views here.

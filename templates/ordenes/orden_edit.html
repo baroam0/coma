@@ -152,7 +152,6 @@
                 <fieldset class="pure-group">
                     <button type="button" class="pure-button pure-button-primary" onclick="GrabarOrden()">Aceptar</button>
                     &nbsp; &nbsp; &nbsp;
-                    <button type="button" class="pure-button" onclick="IrListadoMaterial()">Cancelar</button>
                 </fieldset>
 
 
@@ -165,32 +164,26 @@
                 <div class="modal-content">
                   <span class="close">&times;</span>
 
-                  <form class="pure-form" method="POST"><input type="hidden" name="csrfmiddlewaretoken" value="IFBwT9U5Rn0EflsdG79tL55fZNAchHHkg760DHBs4k1srY4nvGmWob9KBsnMTXh8">
+                  <form class="pure-form">
                         <fieldset class="pure-group">
-                            
                             <label for="aligned-name">Descripcion</label>
-                            <input type="text" name="descripcion" class="pure-input-1" required id="id_descripcion">
+                            <input type="text" name="descripcion" class="pure-input-1" id="txtdescripcionmaterial">
                             <span class="pure-form-message-inline">Este dato es requerido.</span>
                             <br>
                             <br>
         
                             <div class="pure-controls">
-                                <button id="btnguardamaterial" type="button" class="pure-button pure-button-primary">Aceptar</button>
+                                <button type="button" class="pure-button pure-button-primary" onclick="GrabarMaterial()">Aceptar</button>
                                 &nbsp; &nbsp; &nbsp;
                             </div>
                         </fieldset>
-                    </form>
-
-
-                  
+                    </form>                  
                 </div>  
             </div>
-
         </div>
     </div>
 
     {% block customjs %}
-
 
         <script>
 
@@ -210,8 +203,7 @@
                     modal.style.display = "none";
                 }
 
-            });
-
+            });        
 
 
             $('#selectMaterial').select2({
@@ -279,6 +271,27 @@
             function QuitarFila(id){
                 var fila = document.getElementById(id);
                 $("#" + fila.id + "").remove();
+            }
+
+
+            function GrabarMaterial(){
+                var material = $("#txtdescripcionmaterial").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ajaxgrabamaterial/",
+                    data: {
+                        "material": material
+                    },
+                    success: function (response) {
+                        if(response.status==200){
+                            alert(response.descripcion);
+                            $("#txtdescripcionmaterial").val("");
+                        }else{
+                            alert(response.descripcion);
+                        }
+                    }
+                });
             }
 
             function GrabarOrden(){
@@ -354,7 +367,6 @@
                         }
                     }
                 });
-                
             }
 
             function RecorrerTabla(idorden){

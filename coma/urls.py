@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path
 
 from .views import inicio
-from apps.materiales.views import ajaxmaterial, editarmaterial, listadomaterial, nuevomaterial
+from apps.materiales.views import ajaxmaterial, editarmaterial, listadomaterial, nuevomaterial, ajaxgrabamaterial
 from apps.contratistas.views import editarcontratista, listadocontratista, nuevocontratista
 from apps.obras.views import listadoobra, editarobra, nuevaobra
 from apps.ordenes.views import (ajaxgrabarorden, ajaxgrabareditarorden,
@@ -34,6 +34,7 @@ urlpatterns = [
     path('listadomaterial/', listadomaterial),
     path('nuevomaterial/', nuevomaterial),
     path('ajaxmaterial/', ajaxmaterial),
+    path('ajaxgrabamaterial/', ajaxgrabamaterial),
 
     path('editarcontratista/<int:pk>', editarcontratista),
     path('listadocontratista/', listadocontratista),
