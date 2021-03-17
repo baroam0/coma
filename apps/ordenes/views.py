@@ -11,6 +11,7 @@ from apps.materiales.models import Material
 from apps.obras.models import Obra
 
 from apps.libs.funcionfecha import revertirfecha
+from apps.depositos.helper import agregamaterial
 
 
 def listadoorden(request):
@@ -90,11 +91,14 @@ def ajaxgrabarorden(request):
             unidad=unidad
         )
 
+        agregamaterial(material.pk, cantidad)
+
         detalleorden.save()
 
     data = {
         "status": 200
     }
+
     return JsonResponse(data)
 
 
