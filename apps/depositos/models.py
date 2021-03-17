@@ -1,4 +1,5 @@
 
+
 from django.db import models
 
 from apps.materiales.models import Material
@@ -16,7 +17,6 @@ class DepositoCantidad(models.Model):
         verbose_name_plural = "Materiales en Deposito"
 
 
-
 def agregamaterial(material_id, cantidadingresada):
     materialdeposito = DepositoCantidad.objects.get(material=material_id)
     materialdeposito.cantidad = float(materialdeposito.cantidad) + cantidadingresada
@@ -28,7 +28,7 @@ def quitamaterial(material_id, cantidadingresada):
 
     if float(materialdeposito.cantidad) < float(cantidadingresada):
         materialdeposito.cantidad = float(materialdeposito.cantidad) - cantidadingresada
-        materialdeposito.save()
+        materialdeposito.save()       
         return False
     else:
         materialdeposito.cantidad = float(materialdeposito.cantidad) - cantidadingresada
