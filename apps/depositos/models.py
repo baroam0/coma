@@ -11,7 +11,7 @@ class DepositoCantidad(models.Model):
     cantidad_minima = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
 
     def __str__(self):
-        return str(self.cantidad) + " - " + str(self.material.description).upper()
+        return str(self.cantidad) + " - " + str(self.material.descripcion).upper()
 
     class Meta:
         verbose_name_plural = "Materiales en Deposito"    
