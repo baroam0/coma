@@ -32,7 +32,7 @@ def listadodeposito(request):
             "resultados": resultados
         }
     )
-    
+
 
 def nuevaordendeposito(request):
     contratistas = Contratista.objects.all()
@@ -42,6 +42,23 @@ def nuevaordendeposito(request):
     return render(
         request,
         "depositos/ordendeposito_nueva.html",
+        {
+            "contratistas": contratistas,
+            "obras": obras,
+            "unidades": unidades
+        }
+    )
+
+
+def editarordendeposito(request, pk):
+    deposito = DepositoCantidad.objects.get(pk=pk)
+    contratistas = Contratista.objects.all()
+    unidades = Unidad.objects.all().order_by("descripcion")
+    obras = Obra.objects.all().order_by("descripcion")
+
+    return render(
+        request,
+        "depositos/ordendeposito_editar.html",
         {
             "contratistas": contratistas,
             "obras": obras,
