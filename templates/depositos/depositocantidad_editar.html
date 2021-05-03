@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="pure-g">
+        <div class="pure-u-1-24"></div>
+        <div class="pure-u-22-24">
+            <h3 align="center">
+                Desposito - Editar Cantidad  Material {{orden.pk}}
+            </h3>
+
+            <form class="pure-form">
+                {{form}}
+                
+            </form>
+
+            <br>
+            <br>
+
+            
+        </div>
+        <div class="pure-u-1-24">
+            
+            
+        </div>
+    </div>
+
+    <div class="pure-g">
+        <div class="pure-u-1-24">
+        </div>
+        <div class="pure-u-1-24">
+            <button type="button" class="pure-button" onclick="AgregarFilaTabla()" >Aceptar</button>
+        </div>
+
+        <div class="pure-u-19-24">
+        </div>
+
+        <div class="pure-u-1-24">
+            <button type="button" class="pure-button" onclick="" >Cancelar</button>
+        </div>
+        <div class="pure-u-1-24">
+        </div>
+        <div class="pure-u-1-24">
+        </div>
+    </div>
+
+    
+
+
+    {% block customjs %}
+
+        <script>
+
+            $(document).ready(function () {
+                $('#id_material').prop('disabled', true);
+                $('#id_cantidad').prop('readonly', true);
+            });        
+
+
+            /*
+            $('#selectMaterial').select2({
+                width: "50%",
+                language: {
+                    inputTooShort: function() {
+                        return 'Por favor ingrese 3 caracteres';
+                    },
+                    noResults: function() {
+                        return "No se encontraron resultados";
+                    },
+                },
+                minimumInputLength: 3,
+                ajax: {
+                    url: '/ajaxmaterial/',
+                    processResults: function (data) {
+                        return {
+                            results: $.map(data, function (item) {
+                                return {
+                                    text: item.text,
+                                    id: item.id
+                                }
+                            })
+                        };
+                    }
+                }
+            });
+            */
+
+            function IrListadoMaterial() {
+                window.location.replace("/listadoorden");
+            }
+          
+        </script>
+
+    {% endblock %}
+
+{% endblock %}

@@ -1,6 +1,9 @@
 
+from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
+from .forms import DepositoCantidadForm
 
 from .models import DepositoCantidad
 from apps.contratistas.models import Contratista
@@ -8,7 +11,7 @@ from apps.obras.models import Obra
 from apps.ordenes.models import Unidad
 
 
-def listadodeposito(request):
+def listadodepositomateriales(request):
     resultados = None
     if "txtBuscar" in request.GET:
         parametro = request.GET.get("txtBuscar")
@@ -32,6 +35,24 @@ def listadodeposito(request):
             "resultados": resultados
         }
     )
+
+
+def editardepositocantidad(request, pk):
+    consulta = DepositoCantidad.objects.get(pk=pk)
+    if request.POST:
+        form = DepositoCantidadForm(request.POST, instance=consulta)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "SE HA ACTUALIZADO EL MATERIAL")
+            return redirect('/listadodepositomateriales')
+        else:
+            return render(request, 'depositos/depositocantidad_editar.html', {"form": form})
+    else:
+        form = DepositoCantidadForm(instance=consulta)
+        return render(request,
+            'depositos/depositocantidad_editar.html',
+            {"form": form}
+        )
 
 
 def nuevaordendeposito(request):

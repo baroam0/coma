@@ -21,7 +21,7 @@ from django.urls import path
 from .views import inicio
 from apps.materiales.views import ajaxmaterial, editarmaterial, listadomaterial, nuevomaterial, ajaxgrabamaterial
 from apps.contratistas.views import editarcontratista, listadocontratista, nuevocontratista
-from apps.depositos.views import listadodeposito, nuevaordendeposito, editarordendeposito
+from apps.depositos.views import listadodepositomateriales, nuevaordendeposito, editardepositocantidad
 from apps.obras.views import listadoobra, editarobra, nuevaobra
 from apps.ordenes.views import (ajaxgrabarorden, ajaxgrabareditarorden,
     listadoorden, nuevaorden, editarorden, imprimirorden)
@@ -53,9 +53,9 @@ urlpatterns = [
     path('editarobra/<int:pk>', editarobra),
     path('nuevaobra/', nuevaobra),
 
-    path('listadodeposito/', listadodeposito),
+    path('listadodepositomateriales/', listadodepositomateriales),
     path('nuevaordendeposito/', nuevaordendeposito),
-    path('editarordendeposito/<int:pk>', editarordendeposito),
+    path('editardepositocantidad/<int:pk>', editardepositocantidad),
 
     path('listadomaterialporcooperativa/', listadomaterialporcooperativa),
     path('listadomaterialporobra/', listadomaterialporobra),

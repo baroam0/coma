@@ -3,6 +3,7 @@ from django.db import models
 
 from apps.contratistas.models import Contratista
 from apps.materiales.models import Material
+from apps.obras.models import Obra
 from apps.ordenes.models import Unidad
 
 
@@ -26,13 +27,13 @@ class DepositoOrden(models.Model):
 
     def __str__(self):
         return str(self.pk) + " - " + str(self.fecha)
-    
+
     class Meta:
-        verbose_name_plural="Orden"
+        verbose_name_plural="Deposito Orden"
 
 
 class DepositoDetalleOrden(models.Model):
-    orden = models.ForeignKey(Orden, on_delete=models.CASCADE)
+    orden = models.ForeignKey(DepositoOrden, on_delete=models.CASCADE)
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
     unidad = models.ForeignKey(Unidad, on_delete=models.CASCADE)
@@ -40,9 +41,9 @@ class DepositoDetalleOrden(models.Model):
 
     def __str__(self):
         return str(self.orden)
-    
+
     class Meta:
-        verbose_name_plural="Detalles Ordenes"
+        verbose_name_plural="Deposito Detalles Ordenes"
 
 
 # Create your models here.
