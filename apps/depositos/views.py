@@ -7,6 +7,7 @@ from .forms import DepositoCantidadForm
 
 from .models import DepositoCantidad
 from apps.contratistas.models import Contratista
+from apps.materiales.models import Material
 from apps.obras.models import Obra
 from apps.ordenes.models import Unidad
 
@@ -43,7 +44,7 @@ def editardepositocantidad(request, pk):
         form = DepositoCantidadForm(request.POST, instance=consulta)
         if form.is_valid():
             form.save()
-            messages.success(request, "SE HA ACTUALIZADO EL MATERIAL")
+            messages.success(request, "SE HA LA CANTIDAD DEL MATERIAL")
             return redirect('/listadodepositomateriales')
         else:
             return render(request, 'depositos/depositocantidad_editar.html', {"form": form})
@@ -58,7 +59,7 @@ def editardepositocantidad(request, pk):
 def nuevaordendeposito(request):
     contratistas = Contratista.objects.all()
     unidades = Unidad.objects.all().order_by("descripcion")
-    obras = Obra.objects.all().order_by("descripcion")
+    obras = Obra.objects.all().order_by("descripcion").exclude(descripcion="Deposito")
 
     return render(
         request,
@@ -71,11 +72,28 @@ def nuevaordendeposito(request):
     )
 
 
+def ajaxordencantidadmaterial(request):
+    parametro = request.GET.get('term')
+    material = DepositoCantidad.objects.select_related('material').filter(material__descripcion__icontains=parametro)
+
+    dict_tmp = dict()
+    list_tmp = list()
+
+    if len(material) > 0:
+        for i in material:
+            dict_tmp["id"] = i.pk
+            dict_tmp["text"] = i.material.descripcion.upper()
+            list_tmp.append(dict_tmp)
+            dict_tmp = dict()
+
+    return JsonResponse(list_tmp, safe=False)
+
+
 def editarordendeposito(request, pk):
     deposito = DepositoCantidad.objects.get(pk=pk)
     contratistas = Contratista.objects.all()
     unidades = Unidad.objects.all().order_by("descripcion")
-    obras = Obra.objects.all().order_by("descripcion")
+    obras = Obra.objects.all().order_by("descripcion").exclude(descripcion="Deposito")
 
     return render(
         request,

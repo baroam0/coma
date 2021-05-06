@@ -82,8 +82,6 @@
                     <select id="selectMaterial">
                     </select>
 
-                    <button type="button" id="btnnuevomaterial" class="pure-button">Nuevo material </button>
-
                     <input type="text" id="txtCantidad" class="pure-input-1-2" placeholder="Cantidad" />
 
                     <select id="selectUnidad">
@@ -192,7 +190,7 @@
                 },
                 minimumInputLength: 3,
                 ajax: {
-                    url: '/ajaxmaterial/',
+                    url: '/ajaxordencantidadmaterial/',
                     processResults: function (data) {
                         return {
                             results: $.map(data, function (item) {
