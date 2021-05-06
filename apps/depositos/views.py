@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 
 from .forms import DepositoCantidadForm
 
-from .models import DepositoCantidad
+from .models import DepositoCantidad, DepositoOrden, DepositoDetalleOrden
 from apps.contratistas.models import Contratista
 from apps.materiales.models import Material
 from apps.obras.models import Obra
@@ -72,6 +72,59 @@ def nuevaordendeposito(request):
     )
 
 
+@csrf_exempt
+def ajaxgrabarordendeposito(request):
+    fecha = request.POST["fecha"]
+    fecha = revertirfecha(fecha)
+    contratista= Contratista.objects.get(pk=int(request.POST["contratista"]))
+    encargado = request.POST["encargado"]
+    obra = Obra.objects.get(pk=int(request.POST["obra"]))
+
+    arraymaterial = request.POST.getlist('arraymaterial[]')
+    arrayunidad = request.POST.getlist('arrayunidad[]')
+    arraycantidad = request.POST.getlist('arraycantidad[]')
+
+    
+    depositoorden= DepositoOrden(
+        fecha=fecha,
+        contratista=contratista,
+        encargado=encargado,
+        obra=obra
+    )
+
+    depositoorden.save()
+    depositoorden = DepositoOrden.objects.latest("pk")
+
+    material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    
+    
+    faltante = models.BooleanField(default=False)
+
+
+    for (material, unidad, cantidad) in zip(arraymaterial, arrayunidad, arraycantidad):
+        material = Material.objects.get(pk=int(material))
+        unidad = Unidad.objects.get(pk=int(unidad))
+
+        depositodetalleorden = DepositoDetalleOrden(
+            orden=depositoorden,
+            material=material,
+            cantidad=cantidad,
+            unidad=unidad,
+
+        )
+
+        agregamaterial(material.pk, cantidad)
+
+        detalleorden.save()
+
+    data = {
+        "status": 200
+    }
+
+    return JsonResponse(data)
+
+
+
 def ajaxordencantidadmaterial(request):
     parametro = request.GET.get('term')
     material = DepositoCantidad.objects.select_related('material').filter(material__descripcion__icontains=parametro)
@@ -87,6 +140,9 @@ def ajaxordencantidadmaterial(request):
             dict_tmp = dict()
 
     return JsonResponse(list_tmp, safe=False)
+
+
+
 
 
 def editarordendeposito(request, pk):
