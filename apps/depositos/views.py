@@ -1,6 +1,7 @@
 
 from django.contrib import messages
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 
 from .forms import DepositoCantidadForm
@@ -123,8 +124,6 @@ def ajaxgrabarordendeposito(request):
 
     return JsonResponse(data)
 
-
-
 def ajaxordencantidadmaterial(request):
     parametro = request.GET.get('term')
     material = DepositoCantidad.objects.select_related('material').filter(material__descripcion__icontains=parametro)
@@ -140,9 +139,6 @@ def ajaxordencantidadmaterial(request):
             dict_tmp = dict()
 
     return JsonResponse(list_tmp, safe=False)
-
-
-
 
 
 def editarordendeposito(request, pk):
