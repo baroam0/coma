@@ -29,9 +29,9 @@ def listadoorden(request):
             else:
                 resultados = Orden.objects.filter(
                     Q(obra__descripcion__icontains=parametro) |
-                    Q(contratista__descripcion__icontains=parametro)).order_by("-fecha")
+                    Q(contratista__descripcion__icontains=parametro)).order_by("-pk")
         else:
-            resultados = Orden.objects.all().order_by("-fecha")
+            resultados = Orden.objects.all().order_by("-pk")
 
     return render(
         request,
