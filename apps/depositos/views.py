@@ -124,8 +124,6 @@ def ajaxgrabarordendeposito(request):
 
     return JsonResponse(data)
 
-
-
 def ajaxordencantidadmaterial(request):
     parametro = request.GET.get('term')
     material = DepositoCantidad.objects.select_related('material').filter(material__descripcion__icontains=parametro)
@@ -141,9 +139,6 @@ def ajaxordencantidadmaterial(request):
             dict_tmp = dict()
 
     return JsonResponse(list_tmp, safe=False)
-
-
-
 
 
 def editarordendeposito(request, pk):
