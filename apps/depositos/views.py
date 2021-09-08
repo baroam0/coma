@@ -1,6 +1,7 @@
 
 from django.contrib import messages
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 
 from .forms import DepositoCantidadForm
@@ -84,7 +85,7 @@ def ajaxgrabarordendeposito(request):
     arrayunidad = request.POST.getlist('arrayunidad[]')
     arraycantidad = request.POST.getlist('arraycantidad[]')
 
-    
+
     depositoorden= DepositoOrden(
         fecha=fecha,
         contratista=contratista,
@@ -96,8 +97,8 @@ def ajaxgrabarordendeposito(request):
     depositoorden = DepositoOrden.objects.latest("pk")
 
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
-    
-    
+
+
     faltante = models.BooleanField(default=False)
 
 
