@@ -61,6 +61,6 @@ urlpatterns = [
     path('listadomaterialporcooperativa/', listadomaterialporcooperativa),
     path('listadomaterialporobra/', listadomaterialporobra),
     path('reportematerialporcooperativa/<int:pk>', reportematerialporcooperativa),
-    path('reportematerialporobra/<int:pk>', reportematerialporobra),
+    path('reportematerialporobra/', reportematerialporobra),
     
 ]
