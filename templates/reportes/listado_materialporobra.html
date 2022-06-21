@@ -110,13 +110,8 @@
                         "fechahasta": fechahasta
                     },
                     success: function (response) {
-                        if(response.status==200){
-                            console.log(response)
-                            //window.open('/reportematerialporobra/' + idobra, '_blank');
-                            window.open(response);
-                        }else{
-                            
-                        }
+                        var wnd = window.open("about:blank", "", "_blank");
+                        wnd.document.write(response);
                     }
                 });
 
