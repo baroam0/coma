@@ -51,20 +51,43 @@ def reportematerialporcooperativa(request, pk):
 def reportematerialporobra(request):
 
     if request.is_ajax():
-        fechadesde = request.GET["fechadesde"]
-        fechahasta = request.GET["fechahasta"]
-        idobra = request.GET["idobra"]
-
-        obra = Obra.objects.get(pk=int(idobra))
         
-        listfechadesde = fechadesde.split("/")
-        listfechahasta = fechahasta.split("/")
+        if request.GET["fechadesde"]:
+            fechadesde = request.GET["fechadesde"]
+            listfechadesde = fechadesde.split("/")
+        else:
+            listfechadesde = None
+        
+        if request.GET["fechahasta"]:
+            fechahasta = request.GET["fechahasta"]
+            listfechahasta = fechahasta.split("/")
+        else:
+            listfechahasta = None
 
-        orden = Orden.objects.filter(
-            obra=obra.pk,
-            fecha__gte=datetime.date(int(listfechadesde[2]), int(listfechadesde[1]), int(listfechadesde[0])),
-            fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
+        idobra = request.GET["idobra"]
+        obra = Obra.objects.get(pk=int(idobra))
 
+        if listfechadesde and listfechahasta:
+            orden = Orden.objects.filter(
+                obra=obra.pk,
+                fecha__gte=datetime.date(int(listfechadesde[2]), int(listfechadesde[1]), int(listfechadesde[0])),
+                fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
+        else:
+            if not listfechadesde and not listfechahasta:
+                
+                orden = Orden.objects.filter(
+                    obra=obra.pk    
+                )
+            else:
+                if listfechadesde:
+                    orden = Orden.objects.filter(
+                        obra=obra.pk,
+                        fecha__gte=datetime.date(int(listfechadesde[2]), int(listfechadesde[1]), int(listfechadesde[0])))
+                else:
+                    orden = Orden.objects.filter(
+                        obra=obra.pk,
+                        fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
+            
         detallesordenes = DetalleOrden.objects.filter(
             orden__in=orden).exclude(faltante=True).values(
                 'unidad__descripcion','material__descripcion').annotate(cant=Sum('cantidad')).order_by('material')
