@@ -24,6 +24,8 @@
             
             <form class="pure-form">
                 <fieldset>
+                    <input id="fecha_desde" placeholder=" Fecha desde __/__/__">
+                    
                     <select id="selectContratista">
                         {% for contratista in contratistas %}
                             <option value={{contratista.pk}}>
@@ -31,6 +33,8 @@
                             </option>
                         {% endfor%}
                     </select>
+
+                    <input id="fecha_hasta" placeholder=" Fecha hasta __/__/__">
                     
                     <button type="button" class="pure-button pure-button-primary" onclick="GenerarReporte()">Generar Reporte</button>
 
@@ -58,14 +62,67 @@
 
     <script>
         $( document ).ready(function() {
+
+            $("#fecha_desde").datepicker({
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ],
+                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+                ],
+                dayNames: ['Domingo', 'Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado'],
+                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mi&eacute;', 'Juv', 'Vie', 'S&aacute;b'],
+                dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'S&aacute;'],
+                dateFormat: 'dd/mm/yy',
+            });
+
+
+            $("#fecha_hasta").datepicker({
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ],
+                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+                ],
+                dayNames: ['Domingo', 'Lunes', 'Martes', 'Mi&eacute;rcoles', 'Jueves', 'Viernes', 'S&aacute;bado'],
+                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mi&eacute;', 'Juv', 'Vie', 'S&aacute;b'],
+                dayNamesMin: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'S&aacute;'],
+                dateFormat: 'dd/mm/yy',
+            });
             
         });
 
-        function GenerarReporte() {
+        /*
 
+        function GenerarReporte() {
             var idcontratista = $("#selectContratista").val();
             window.open('/reportematerialporcooperativa/' + idcontratista, '_blank');
         }
+        */
+
+        function GenerarReporte() {
+
+            var contratista = $("#selectContratista").val();
+            var fechadesde = $("#fecha_desde").val();
+            var fechahasta = $("#fecha_hasta").val();
+
+            $.ajax({
+                    type: "GET",
+                    url: "/reportematerialporcooperativa/",
+                    data: {
+                        "contratista": contratista,
+                        "fechadesde": fechadesde,
+                        "fechahasta": fechahasta
+                    },
+                    success: function (response) {
+                        var wnd = window.open("about:blank", "", "_blank");
+                        wnd.document.write(response);
+
+                    }
+                });
+        }
+
+
 
     </script>
 

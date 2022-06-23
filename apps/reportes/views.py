@@ -18,6 +18,7 @@ def listadomaterialporcooperativa(request):
         }
     )
 
+
 def listadomaterialporobra(request):
     obras = Obra.objects.all()
     return render(
@@ -29,9 +30,43 @@ def listadomaterialporobra(request):
     )
 
 
-def reportematerialporcooperativa(request, pk):
-    contratista = Contratista.objects.get(pk=pk)
-    orden = Orden.objects.filter(contratista=contratista.pk)
+def reportematerialporcooperativa(request):
+    if request.is_ajax():
+        contratista = Contratista.objects.get(pk=int(request.GET["contratista"]))
+
+        if request.GET["fechadesde"]:
+            fechadesde = request.GET["fechadesde"]
+            listfechadesde = fechadesde.split("/")
+        else:
+            listfechadesde = None
+        
+        if request.GET["fechahasta"]:
+            fechahasta = request.GET["fechahasta"]
+            listfechahasta = fechahasta.split("/")
+        else:
+            listfechahasta = None
+
+        if listfechadesde and listfechahasta:
+            orden = Orden.objects.filter(
+                contratista=contratista.pk,
+                fecha__gte=datetime.date(int(listfechadesde[2]), int(listfechadesde[1]), int(listfechadesde[0])),
+                fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
+        else:
+            if not listfechadesde and not listfechahasta:
+                orden = Orden.objects.filter(
+                    contratista=contratista.pk
+                )
+            else:
+                if listfechadesde:
+                    orden = Orden.objects.filter(
+                        contratista=contratista.pk,
+                        fecha__gte=datetime.date(int(listfechadesde[2]), int(listfechadesde[1]), int(listfechadesde[0])))
+                else:
+                    orden = Orden.objects.filter(
+                        contratista=contratista.pk,
+                        fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
+
+    #orden = Orden.objects.filter(contratista=contratista.pk)
     detallesordenes = DetalleOrden.objects.filter(
         orden__in=orden).values(
             'orden__obra__descripcion',
@@ -49,15 +84,13 @@ def reportematerialporcooperativa(request, pk):
 
 
 def reportematerialporobra(request):
-
     if request.is_ajax():
-        
         if request.GET["fechadesde"]:
             fechadesde = request.GET["fechadesde"]
             listfechadesde = fechadesde.split("/")
         else:
             listfechadesde = None
-        
+
         if request.GET["fechahasta"]:
             fechahasta = request.GET["fechahasta"]
             listfechahasta = fechahasta.split("/")
@@ -74,7 +107,6 @@ def reportematerialporobra(request):
                 fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
         else:
             if not listfechadesde and not listfechahasta:
-                
                 orden = Orden.objects.filter(
                     obra=obra.pk    
                 )
@@ -87,7 +119,7 @@ def reportematerialporobra(request):
                     orden = Orden.objects.filter(
                         obra=obra.pk,
                         fecha__lte=datetime.date(int(listfechahasta[2]), int(listfechahasta[1]), int(listfechahasta[0])))
-            
+
         detallesordenes = DetalleOrden.objects.filter(
             orden__in=orden).exclude(faltante=True).values(
                 'unidad__descripcion','material__descripcion').annotate(cant=Sum('cantidad')).order_by('material')
@@ -99,20 +131,3 @@ def reportematerialporobra(request):
                 "obra": obra
             }
         )
-
-
-    """
-    detallesordenes = DetalleOrden.objects.filter(
-        orden__in=orden).exclude(faltante=True).values(
-            'unidad__descripcion','material__descripcion').annotate(
-                cant=Sum('cantidad')).order_by('material')
-    
-    return render(
-        request,
-        "reportes/imprimirreportematerialporobra.html",
-        {
-            "detallesordenes": detallesordenes,
-            "obra": obra
-        }
-    )
-    """
