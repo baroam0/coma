@@ -1,5 +1,5 @@
 
-from apps.materiales.models import Material
+from materiales.models import Material
 
 archivo = open("materiales.txt", "r")
 
