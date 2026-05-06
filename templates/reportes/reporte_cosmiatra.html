@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h3 class="h3 text-gray-800">Reporte de Cosmiatra</h3>
+    </div>
+  
+    <div class="card-body">
+
+      <form action="/reportes/cosmiatras/" method="GET">
+        {% csrf_token %}
+    
+        <div class="form-group">
+          <label for="{{ form.fecha_desde.id_for_label }}">Fecha desde</label>
+          {{ form.fecha_desde }}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.fecha_hasta.id_for_label }}">Fecha hasta</label>
+          {{ form.fecha_hasta }}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.cosmiatra.id_for_label }}">Cosmiatra</label>
+          {{ form.cosmiatra }}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.cosmiatra.id_turno }}">Turno</label>
+          {{ form.turno }}
+        </div>        
+
+        <div class="form-group">
+          <label for="{{ form.porcentaje.id_for_label }}">Porcentaje</label>
+          {{ form.porcentaje }}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          Generar Reporte
+        </button>
+
+        <!-- Botones cosmiatras -->
+        {% for botoncosmiatra in botonescosmiatras %}
+        <button type="button" class="btn btn-outline-primary btn-block mt-2"
+          onclick="abrirModal('{{ botoncosmiatra.id }}', '{{ botoncosmiatra.nombre }} {{ botoncosmiatra.apellido }}')">
+          Hoy - {{ botoncosmiatra.nombre }} {{ botoncosmiatra.apellido }} (20%) 
+        </button>
+        {% endfor %}
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalCosmiatra" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+          <div class="modal-content">
+
+              <div class="modal-header">
+                  <h5 class="modal-title font-weight-bold text-primary">
+                      <i class="fas fa-user mr-2"></i>
+                      <span id="modalNombreCosmiatra"></span>
+                  </h5>
+                  <button type="button" class="close" data-dismiss="modal">
+                      <span>&times;</span>
+                  </button>
+              </div>
+
+              <div class="modal-body">
+
+                <!-- Spinner mientras carga -->
+                <div id="modalSpinner" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Cargando...</span>
+                    </div>
+                </div>
+
+                <!-- Tabla (oculta hasta que carguen los datos) -->
+                <div id="modalTablaContainer" style="display:none;">
+                    <div class="table-responsive" style="max-height: 450px; overflow-y: auto;">
+                        <table class="table table-hover table-sm">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Paciente</th>
+                                    <th>Tratamientos</th>
+                                    <th>Productos</th>
+                                    <th>Monto</th>
+                                    <th>Modo Pago</th>
+                                    <th>Observaciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalTablaCuerpo"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Sin resultados -->
+                <div id="modalSinDatos" class="text-center text-muted py-4" style="display:none;">
+                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                    <p>No hay turnos registrados</p>
+                </div>
+              </div>
+
+              <div class="modal-footer d-flex justify-content-between align-items-center">
+                <span class="font-weight-bold text-info">
+                    Total: <span id="modalTotal">0</span>
+                </span>
+
+                <span class="font-weight-bold text-info">
+                   <b class="text-danger"> Comision (20%): <span id="modalComision">0</span> </b>
+                </span>
+
+                <span class="font-weight-bold text-info">
+                    <b class="text-success"> Saldo: <span id="modalSaldo">0</span> </b>
+                </span>
+
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla responsiva -->
+    <div class="table-responsive">
+        <table class="table table-hover table-sm" id="tablaProductos">
+            <thead class="thead-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Paciente</th>
+                    <th>Cosmiatra</th>
+                    <th>Tratamientos</th>
+                    <th>Productos</th>
+                    <th>Observaciones</th>
+                    <th>Monto</th>
+                    <th>Porcentaje</th>
+                </tr>
+            </thead>
+
+            <tbody id="tbodyProductos">
+              {% for t in turnos %}
+              <tr>
+                <td>{{ t.fecha|date:"d/m/Y H:i" }}</td>
+                <td>{{ t.paciente }}</td>
+                <td>{{ t.cosmiatra }}</td>
+                <td>{{ t.tratamiento }}</td>
+                <td>{{ t.producto }}</td>
+                <td>{{ t.observaciones|default:"" }}</td>
+                <td> $ {{ t.monto }}</td>
+                <td>{{ porcentaje }}%</td>
+              </tr>
+              {% endfor %}
+              
+            </tbody>
+        </table>
+        <b>Total: $ {{total}} - <b class="text-danger"> Porcentaje a pagar({{porcentaje}} %)  $ {{comision}} </b> - <b class="text-success"> Saldo: $ {{saldo}} </b>
+
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+
+    function abrirModal(cosmiatraId, nombre) {
+      const turno = document.getElementById("id_turno").value;
+
+      document.getElementById("modalNombreCosmiatra").textContent = nombre;
+      document.getElementById("modalSpinner").style.display = "block";
+      document.getElementById("modalTablaContainer").style.display = "none";
+      document.getElementById("modalSinDatos").style.display = "none";
+      document.getElementById("modalTablaCuerpo").innerHTML = "";
+      document.getElementById("modalSaldo").textContent = "0";
+      document.getElementById("modalComision").textContent = "0";
+      document.getElementById("modalTotal").textContent = "0";
+
+      $("#modalCosmiatra").modal("show");
+
+      fetch(`/reportes/cosmiatra-ajax/?cosmiatra_id=${cosmiatraId}&turno=${turno}`)
+          .then(response => response.json())
+          .then(data => {
+              console.log(data);
+              document.getElementById("modalSpinner").style.display = "none";
+
+              if (data.turnos.length === 0) {
+                  document.getElementById("modalSinDatos").style.display = "block";
+                  return;
+              }
+
+              const tbody = document.getElementById("modalTablaCuerpo");
+              data.turnos.forEach(t => {
+                  tbody.innerHTML += `
+                      <tr>
+                          <td>${t.fecha}</td>
+                          <td>${t.paciente}</td>
+                          <td>${t.tratamientos}</td>
+                          <td>${t.productos}</td>
+                          <td class="text-success font-weight-bold">$${t.monto}</td>
+                          <td>${t.modo_pago}</td>
+                          <td>${t.observaciones}</td>
+                      </tr>
+                  `;
+              });
+
+              document.getElementById("modalTotal").textContent = `$${data.total}`;
+              document.getElementById("modalComision").textContent = `$${data.comision}`;
+              document.getElementById("modalSaldo").textContent = `$${data.saldo}`;
+              document.getElementById("modalTablaContainer").style.display = "block";
+          })
+          .catch(() => {
+              document.getElementById("modalSpinner").style.display = "none";
+              document.getElementById("modalSinDatos").style.display = "block";
+          });
+  }
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,10 @@
+
+
+<form id="formIngreso" method="post" action="{% url 'modal-data-cargaingresos' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary btn-block">
+        Guardar
+    </button>
+</form>

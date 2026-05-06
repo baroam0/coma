@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{%block content%}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Manual de Usuario - Listado de Tratamientos</title>
+    <!-- SB Admin 2 CSS -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <div id="content" class="container-fluid">
+
+                <h1 class="h3 mb-4 text-gray-800">Manual de Usuario - Módulo Listado de Tratamientos</h1>
+
+                
+                <p>
+                    El módulo de <strong>Listado de Tratamientos</strong> permite visualizar todos los tratamientos cargados en el sistema.
+                    Al ingresar, se muestra un listado acompañado de un buscador para localizar rápidamente un tratamiento específico.
+                </p>
+
+                <!-- Buscador -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Buscador de Tratamientos</h6>
+                    </div>
+                    <div class="card-body">
+                        <form class="mb-3">
+                            <div class="input-group">
+                                <input class="form-control" placeholder="Descripcion">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-primary" >
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <p>
+                    El buscador funciona tipeando la descripcion del producto, tratando de hacer coincidir el texto ingresado o contenga una parte del texto en su descripcion. Si se ingrea la 
+                    palabra <strong>acido</strong>, <strong>ACIDO</strong> o <strong>Acido</strong>, buscara los productos que tengan coincidencia con lo ingresado.
+                </p>
+
+                <!-- Tabla de tratamientos -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Listado de Productos</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Descripcion</th>
+                                        <th>Precio</th>
+                                        <th>Cargado por</th>
+                                        
+                                        <th>Editar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Tratamiento A</td>
+                                        <td>$1000</td>
+                                        <td>Juan Pérez - 10/01/2026 10:00 </td>
+                                        <td>                                            
+                                            <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                <i class="fas fa-pencil-alt"></i> 
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tratamiento B</td>
+                                        <td>$1500</td>
+                                        <td>María Gómez - 12/01/2026 09:00 </td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm">
+                                                <i class="fas fa-pencil-alt"></i> 
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>                
+
+                <p>
+                    En el listado de tratamientos el boton 
+                    <button type="button" class="btn btn-outline-secondary btn-sm">                            
+                        <i class="fas fa-pencil-alt"></i> 
+                    </button> permitira editar la descripcion y el precio del tratamiento. 
+                    Cada vez que un usuario edite algo, el nombre de este, 
+                    la fecha y hora de la acción se registrara y mostrará.
+    
+                </p>
+            
+            </div>
+
+
+            <div class="container-fluid">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="p-5">
+                                    <div class="text-center">
+                                        <h1 class="h4 text-gray-900 mb-4">Editar Tratamiento</h1>
+                                    </div>
+
+                                    <form>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                                <input type="text" name="descripcion" value="DEPI FACIAL" placeholder="Descripcion" maxlength="100" class="form-control form-control-user" required id="id_descripcion">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <div class="col-sm-12 mb-3 mb-sm-0">
+                                                <input type="number" name="precio" value="30000.00" step="any" class="form-control form-control-user" required id="id_precio">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <div class="col-sm-6 mb-3 mb-sm-0">
+                                                <button type="button" class="btn btn-primary btn-user btn-block">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <button type="button" class="btn btn-secondary btn-user btn-block" onclick="Volver()"">
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+
+</body>
+
+{%endblock%}

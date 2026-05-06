@@ -1,0 +1,94 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <h1 class="h3 mb-4 text-gray-800">Eliminar Turno</h1>
+
+    <div class="row">
+        <div class="col-lg-12">
+            {% if turno.pagado %}
+            <div class="card shadow mb-6 border-left-danger">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">Confirmar eliminación</h6>
+                </div>
+
+                <div class="card-body">
+
+                    <h6 class="text-dark font-weight-bold">
+                        <p>No se puede eliminar este turno porque esta pagado</p>
+                    </h6>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                    
+                        <a href="{% url 'turno_update' turno.pk %}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                    </form>
+
+                </div>
+            </div>
+            {%else%}
+            <div class="card shadow mb-6 border-left-danger">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">Confirmar eliminación</h6>
+                </div>
+
+                <div class="card-body">
+                    <p>¿Estás segura de que querés eliminar el turno?</p>
+
+                    <h6 class="text-dark font-weight-bold">
+                        Paciente: {{turno.nombrepaciente }}
+                    </h6>
+
+                    <h6 class="text-dark font-weight-bold">
+                        Fecha: {{ turno.fecha_hora }} - {{ turno.numerodocumento }}
+                    </h6>
+
+                    <h6 class="text-dark font-weight-bold">
+                        {% if turno.pagado %}
+                            Pagado: SI
+                        {% else %}
+                            Pagado: NO
+                        {% endif %}
+                    </h6>
+
+                    <p class="text-muted">
+                        Esta acción no se puede deshacer.
+                    </p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+
+                        <a href="{% url 'turno_update' turno.pk %}" class="btn btn-secondary">
+                            Cancelar
+                        </a>
+                    </form>
+                </div>
+            </div>
+            {%endif%}
+
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+
+{% block js%}
+<script>
+    
+    function Volver() {
+        window.location.replace("/historiasclinicas/lista/" + "{{ historiaclinica.paciente.pk }}");
+    }    
+
+</script>
+{%endblock%}
+
+

@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h3 class="h3 text-gray-800">
+            <i class="fas fa-fw fa-file-medical"></i> Historia Clínica - 
+                <a href="{% url 'editar_paciente' paciente.id %}">
+                    {{ paciente.nombre }}({{paciente.edad}})
+                </a>            
+
+            <button type="button" class="btn btn-primary btn-sm ml-2" 
+                    title="Nueva Historia Clínica" 
+                    onclick="location.href='/historiasclinicas/crear/{{ paciente.pk }}'">
+                <i class="fas fa-plus"></i>
+            </button>
+        </h3>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                {{message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Tabla responsiva -->
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Historia</th>
+                    <th>Diagnóstico</th>
+                    <th>Tratamiento</th>
+                    <th>Archivos</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for historiaclinica in historiasclinicas %}
+                <tr>
+                    <td>{{ historiaclinica.fecha }}</td>
+                    <td>{{ historiaclinica.historia }}</td>
+                    
+                    {%if historiaclinica.diagnostico %}
+                        <td>{{ historiaclinica.diagnostico }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+                    {%if historiaclinica.tratamiento %}
+                        <td>{{ historiaclinica.tratamiento }}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+
+                    <td>
+                        {% for archivo in historiaclinica.imagenes.all %}
+                            {% with url=archivo.imagen.url|lower %}
+                            {% if ".mp4" in url or ".mov" in url or ".webm" in url %}
+                                <video 
+                                    src="{{ archivo.imagen.url }}" 
+                                    style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                    data-toggle="modal"
+                                    data-target="#modalArchivo{{ archivo.id }}">
+                                </video>
+                            {% else %}
+                            
+                            <img 
+                                src="{{ archivo.imagen.url }}" 
+                                class="img-thumbnail"
+                                style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                data-toggle="modal"
+                                data-target="#modalArchivo{{ archivo.id }}" />
+                            {% endif %}
+                        {% endwith %}
+                        {% empty %}
+                            <span class="text-muted">Sin archivos</span>
+                        {% endfor %}
+                    </td>
+                
+
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                onclick="location.href='/historiasclinicas/editar/{{ historiaclinica.pk }}'" 
+                                title="Editar">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                    </td>
+
+                    <td>
+                        <button type="button" class="btn btn-danger btn-sm" 
+                                onclick="location.href='/historiasclinicas/eliminar/{{ historiaclinica.pk }}'" 
+                                title="Editar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h3 class="h3 text-gray-800">
+            <i class="fas fa-fw fa-hand-holding-medical"></i> Tratamientos Estéticos - {{ paciente.nombre }}
+        </h3>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-hover table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tratamiento</th>
+                    <th>Productos</th>
+                    <th>Cosmiatra</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for turno in turnos %}
+                <tr>
+                    <td>{{ turno.fecha_hora }}</td>
+                    <td>
+                        <li>{{ turno.tratamiento }} </li> 
+                    </td>
+                    <td>
+                        <li>{{ turno.producto }} </li> 
+                        
+                    </td>
+                    <td>{{ turno.cosmiatra }} </td>
+                    
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+{% for historiaclinica in historiasclinicas %}
+    {% for archivo in historiaclinica.imagenes.all %}
+        {% with url=archivo.imagen.url|lower %}
+
+        <div class="modal fade" id="modalArchivo{{ archivo.id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ historiaclinica.fecha }}</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body text-center">
+                        {% if ".mp4" in url or ".mov" in url or ".webm" in url %}
+                            <video 
+                                id="video{{ archivo.id }}"
+                                src="{{ archivo.imagen.url }}" 
+                                controls 
+                                style="max-width: 100%; max-height: 75vh;">
+                            </video>
+                        {% else %}
+                            <img 
+                                src="{{ archivo.imagen.url }}" 
+                                style="max-width: 100%; max-height: 75vh;" />
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+    {% endfor %}
+{% endfor %}
+
+
+<script>
+    // Pausar video al cerrar el modal
+    $(document).on('hidden.bs.modal', '.modal', function () {
+        var video = $(this).find('video')[0];
+        if (video) {
+            video.pause();
+            video.currentTime = 0;
+        }
+    });
+</script>
+
+
+
+
+{% endblock %}
+
+
+
+

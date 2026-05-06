@@ -1,0 +1,50 @@
+
+
+<table class="table table-hover table-sm">
+    <thead class="thead-dark">
+        <tr>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Categoria</th>
+            <th>Ingreso</th>
+            <th>Egreso</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for ingresohoy in ingresoshoy %}
+        <tr>
+            <td>{{ ingresohoy.fecha|date:"d/m/Y h:i a" }} </td>
+            <td>{{ ingresohoy.descripcion }}</td>
+            <td>{{ ingresohoy.categoria.descripcion }}</td>
+
+            {% if ingresohoy.esingreso %}
+                <td class="text-success">
+                    {{ ingresohoy.monto|floatformat:2 }}
+                </td>
+                <td>
+                </td>
+            {% else %}
+                <td>
+                </td>
+                <td class="text-danger">
+                    {{ ingresohoy.monto|floatformat:2 }}
+                </td>
+            {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No hay ingresos registrados hoy</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td><span class="text-success mr-3">Ingresos: {{ totalingresos }}</span></td>
+            <td><span class="text-danger mr-3">Egresos: {{ totalegresos }}</span></td>
+            <td><span class="text-danger mr-3">Saldo: {{ total }}</span></td>
+        </tr>
+        
+    </tbody>
+</table>
+
