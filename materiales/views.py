@@ -31,7 +31,7 @@ def buscar_materiales(request):
     else:
         pacientes = Material.objects.none()
 
-    paginator = Paginator(pacientes, 20)
+    paginator = Paginator(pacientes, 1000)
     page_obj = paginator.get_page(page_number)
 
     data = [{
