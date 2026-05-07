@@ -37,8 +37,8 @@ def buscar_contratistas(request):
     data = [{
         "id": p.pk,
         "descripcion": p.descripcion,
-        "responsable": p.responsable,
-        "domicilio": p.domicilio
+        "responsable": p.responsable or "",
+        "domicilio": p.domicilio or ""
     } for p in page_obj]
 
     return JsonResponse({

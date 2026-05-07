@@ -27,6 +27,7 @@ def buscar_documentaciones(request):
         documentaciones = Documentacion.objects.filter(
             Q(descripcion__icontains=parametro) |
             Q(nomenclatura__icontains=parametro) |
+            Q(nota__icontains=parametro) |
             Q(observaciones__icontains=parametro)
         ).order_by("descripcion")
     else:
@@ -94,7 +95,7 @@ def editar_documentacion(request, pk):
         'accion': 'Editar ',
         'pk': pk
     }
-    return render(request, 'documentaciones/crear_documentacionº.html', context)
+    return render(request, 'documentaciones/crear_documentacion.html', context)
 
 
 """
