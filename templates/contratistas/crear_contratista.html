@@ -5,7 +5,7 @@
     <div class="card o-hidden border-0 shadow-lg my-4">
         <div class="card-body p-4">
             <div class="text-center mb-4">
-                <h1 class="h4 text-gray-900">{{ accion }} Material</h1>
+                <h1 class="h4 text-gray-900">{{ accion }} Contratista</h1>
             </div>
 
             {% if messages %}
@@ -26,6 +26,29 @@
                     <div class="form-group col-md-12">
                         <label for="id_nombre">Descripcion</label>
                         {{ form.descripcion }}
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="id_nombre">Responsable</label>
+                        {{ form.responsable }}
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="id_nombre">Numero documento </label>
+                        {{ form.responsabledni }}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="id_nombre"> Domicilio </label>
+                        {{ form.domicilio }}
                     </div>
                 </div>
 
@@ -56,7 +79,7 @@
        
     
     function Volver() {
-        window.location.replace("/materiales/lista/");
+        window.location.replace("/contratistas/lista/");
     }
 
 </script>

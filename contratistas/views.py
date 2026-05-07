@@ -9,34 +9,36 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import MaterialForm
-from .models import Material
+from .forms import ContratistaForm
+from .models import Contratista
 
 
 @login_required
-def listar_materiales(request):
-    resultados = Material.objects.none()
-    return render(request, 'materiales/lista_material.html', {'results': resultados})
+def listar_contratistas(request):
+    resultados = Contratista.objects.none()
+    return render(request, 'contratistas/lista_contratistas.html', {'results': resultados})
 
 
 @login_required
-def buscar_materiales(request):
+def buscar_contratistas(request):
     parametro = request.GET.get('q', '')
     page_number = request.GET.get('page', 1)
 
     if parametro:
-        pacientes = Material.objects.filter(
+        contratistas = Contratista.objects.filter(
             descripcion__icontains=parametro
         ).order_by("descripcion")
     else:
-        pacientes = Material.objects.none()
+        contratistas = Contratista.objects.none()
 
-    paginator = Paginator(pacientes, 250)
+    paginator = Paginator(contratistas, 250)
     page_obj = paginator.get_page(page_number)
 
     data = [{
         "id": p.pk,
-        "descripcion": p.descripcion
+        "descripcion": p.descripcion,
+        "responsable": p.responsable,
+        "domicilio": p.domicilio
     } for p in page_obj]
 
     return JsonResponse({
@@ -51,44 +53,44 @@ def buscar_materiales(request):
 
 
 @login_required
-def crear_material(request):
+def crear_contratista(request):
     if request.method == 'POST':
-        form = MaterialForm(request.POST)
+        form = ContratistaForm(request.POST)
         if form.is_valid():
-            material=form.save()
-            nuevo_id=material.id
-            messages.success(request, "Material grabado correctamente.") 
-            return redirect('editar_material', pk=nuevo_id)
+            contratista=form.save()
+            nuevo_id=contratista.id
+            messages.success(request, "Contratista grabado correctamente.") 
+            return redirect('editar_contratista', pk=nuevo_id)
     else:
-        form = MaterialForm()
+        form = ContratistaForm()
 
-    return render(request, 'materiales/crear_material.html', {
+    return render(request, 'contratistas/crear_contratista.html', {
         'form': form, 'accion': 'Nuevo '})
 
 
 @login_required
-def editar_material(request, pk):
-    material = get_object_or_404(Material, pk=pk)
+def editar_contratista(request, pk):
+    contratista = get_object_or_404(Contratista, pk=pk)
 
     if request.method == 'POST':
-        form = MaterialForm(request.POST, instance=material)
+        form = ContratistaForm(request.POST, instance=contratista)
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Material actualizado correctamente.") 
-            return redirect('/materiales/editar/' + str(pk))
+            messages.success(request, "Contratista actualizado correctamente.") 
+            return redirect('/contratistas/editar/' + str(pk))
         else:
             messages.error(request, "Hay errores en el formulario.") 
     
     else:
-        form = MaterialForm(instance=material)
+        form = ContratistaForm(instance=contratista)
 
     context = {
         'form': form,
         'accion': 'Editar',
         'pk': pk
     }
-    return render(request, 'materiales/crear_material.html', context)
+    return render(request, 'contratistas/crear_contratista.html', context)
 
 
 """

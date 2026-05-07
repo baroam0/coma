@@ -17,7 +17,7 @@
 
     <!-- Encabezado -->
     <div class="text-center mb-4">
-        <h4 class="h4 text-gray-800">Listado de Contratistas </h4>
+        <h4 class="h4 text-gray-800">Listado de Documentaciones </h4>
     </div>
 
     <!-- Mensajes -->
@@ -32,11 +32,11 @@
         {% endfor %}
     {% endif %}
 
-    <form action="/contratistas/lista/" method="GET" class="mb-3">
+    <form action="/documentaciones/lista/" method="GET" class="mb-3">
         <div class="input-group">
-            <input class="form-control" id="txtBuscar" name="txtBuscar" placeholder="Nombre del materiales">
+            <input class="form-control" id="txtBuscar" name="txtBuscar" placeholder="Buscar expediente...">
             <div class="input-group-append">
-                <button type="button" class="btn btn-primary" title="Nuevo Producto" onclick="location.href='/contratistas/crear/'">
+                <button type="button" class="btn btn-primary" title="Nuevo Producto" onclick="location.href='/documentaciones/crear/'">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -45,21 +45,22 @@
 
     <!-- Tabla responsiva -->
     <div class="table-responsive">
-        <table class="table table-hover table-sm" id="tablaContratistas">
+        <table class="table table-hover table-sm" id="tablaDocumentacion">
             <thead class="thead-light">
                 <tr>
+                    <th>Nomenclatura </th>
                     <th>Descripcion </th>
-                    <th>Responsable </th>
-                    <th>Domicilio </th>
+                    <th>Tipo </th>
+                    <th>Estado </th>
                     <th>Editar</th>
                 </tr>
             </thead>
-            <tbody id="tbodyContratistas">
+            <tbody id="tbodyDocumentacion">
                 {% for r in results %}
                 <tr>
-                    <td>{{ r.descripcion }}</td>
+                    <td>{{ r.descripcion.upper }}</td>
                     <td>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/contratistas/editar/{{ r.pk }}'">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/documentaciones/editar/{{ r.pk }}'">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
                     </td>
@@ -76,26 +77,32 @@
 
 
 document.getElementById("txtBuscar").addEventListener("keyup", function() {
-    let query = this.value;
+    const query = this.value.trim();
 
-    fetch(`/contratistas/buscar?q=${query}`)
+    if (query.length < 3) {
+        actualizarVista([]);
+        return;
+    }
+
+    fetch(`/documentaciones/buscar?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => actualizarVista(data));
-    
 });
 
+
 function actualizarVista(data) {
-    let tbody = document.getElementById("tbodyContratistas");
+    let tbody = document.getElementById("tbodyDocumentacion");
     tbody.innerHTML = "";
 
     data.results.forEach(p => {
         tbody.innerHTML += `
             <tr>
+                <td>${p.nomenclatura}</td>
                 <td>${p.descripcion}</td>
-                <td>${p.responsable}</td>
-                <td>${p.domicilio}</td>
+                <td>${p.tipo}</td>
+                <td>${p.estado}</td>
                 <td>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/contratistas/editar/${p.id}'">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/documentaciones/editar/${p.id}'">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
                 </td>

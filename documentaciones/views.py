@@ -4,40 +4,46 @@ import json
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
-from django.utils import timezone
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
 
-from .forms import MaterialForm
-from .models import Material
-
-
-@login_required
-def listar_materiales(request):
-    resultados = Material.objects.none()
-    return render(request, 'materiales/lista_material.html', {'results': resultados})
+from .forms import DocumentacionForm
+from .models import Documentacion
 
 
 @login_required
-def buscar_materiales(request):
+def listar_documentaciones(request):
+    resultados = Documentacion.objects.none()
+    return render(request, 'documentaciones/lista_documentacion.html', {'results': resultados})
+
+
+@login_required
+def buscar_documentaciones(request):
     parametro = request.GET.get('q', '')
     page_number = request.GET.get('page', 1)
 
     if parametro:
-        pacientes = Material.objects.filter(
-            descripcion__icontains=parametro
+        documentaciones = Documentacion.objects.filter(
+            Q(descripcion__icontains=parametro) |
+            Q(nomenclatura__icontains=parametro) |
+            Q(observaciones__icontains=parametro)
         ).order_by("descripcion")
     else:
-        pacientes = Material.objects.none()
+        documentaciones = Documentacion.objects.none()
 
-    paginator = Paginator(pacientes, 500)
+    paginator = Paginator(documentaciones, 500)
     page_obj = paginator.get_page(page_number)
 
-    data = [{
-        "id": p.pk,
-        "descripcion": p.descripcion
-    } for p in page_obj]
+    data = [
+        {
+            "id": p.pk,
+            "nomenclatura": p.nomenclatura or "",
+            "descripcion": p.descripcion or "",
+            "tipo": p.get_tipo_display() or "",
+            "estado": p.get_estado_display() or "",
+        } for p in page_obj
+    ]
 
     return JsonResponse({
         "results": data,
@@ -51,44 +57,44 @@ def buscar_materiales(request):
 
 
 @login_required
-def crear_material(request):
+def crear_documentacion(request):
     if request.method == 'POST':
-        form = MaterialForm(request.POST)
+        form = DocumentacionForm(request.POST)
         if form.is_valid():
             material=form.save()
             nuevo_id=material.id
             messages.success(request, "Material grabado correctamente.") 
             return redirect('editar_material', pk=nuevo_id)
     else:
-        form = MaterialForm()
+        form = DocumentacionForm()
 
-    return render(request, 'materiales/crear_material.html', {
-        'form': form, 'accion': 'Nuevo '})
+    return render(request, 'documentaciones/crear_documentacion.html', {
+        'form': form, 'accion': 'Nueva '})
 
 
 @login_required
-def editar_material(request, pk):
-    material = get_object_or_404(Material, pk=pk)
+def editar_documentacion(request, pk):
+    documentacion = get_object_or_404(Documentacion, pk=pk)
 
     if request.method == 'POST':
-        form = MaterialForm(request.POST, instance=material)
+        form = DocumentacionForm(request.POST, instance=documentacion)
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Material actualizado correctamente.") 
-            return redirect('/materiales/editar/' + str(pk))
+            messages.success(request, "Documentacion actualizada correctamente.") 
+            return redirect('/documentaciones/editar/' + str(pk))
         else:
             messages.error(request, "Hay errores en el formulario.") 
     
     else:
-        form = MaterialForm(instance=material)
+        form = DocumentacionForm(instance=documentacion)
 
     context = {
         'form': form,
-        'accion': 'Editar',
+        'accion': 'Editar ',
         'pk': pk
     }
-    return render(request, 'materiales/crear_material.html', context)
+    return render(request, 'documentaciones/crear_documentacionº.html', context)
 
 
 """
@@ -116,5 +122,5 @@ def eliminar_paciente(request, pk):
     )
 """
 
-
 # Create your views here.
+

@@ -55,7 +55,7 @@
             <tbody id="tbodyMateriales">
                 {% for r in results %}
                 <tr>
-                    <td>{{ r.descripcion }}</td>
+                    <td>{{ r.descripcion.upper }}</td>
                     <td>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/{{ r.pk }}'">
                             <i class="fas fa-pencil-alt"></i>
@@ -74,13 +74,18 @@
 
 
 document.getElementById("txtBuscar").addEventListener("keyup", function() {
-    let query = this.value;
+    const query = this.value.trim();
 
-    fetch(`/materiales/buscar?q=${query}`)
+    if (query.length < 3) {
+        actualizarVista([]);
+        return;
+    }
+
+    fetch(`/materiales/buscar?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => actualizarVista(data));
-    
 });
+
 
 function actualizarVista(data) {
     let tbody = document.getElementById("tbodyMateriales");
@@ -89,7 +94,7 @@ function actualizarVista(data) {
     data.results.forEach(p => {
         tbody.innerHTML += `
             <tr>
-                <td>${p.descripcion}</td>
+                <td>${p.descripcion.toUpperCase()}</td>
                 <td>
                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/${p.id}'">
                         <i class="fas fa-pencil-alt"></i>
