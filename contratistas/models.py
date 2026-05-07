@@ -6,7 +6,7 @@ class Contratista(models.Model):
     responsable = models.CharField(
         max_length=250, unique=True, blank=True, null=True
     )
-    responsabledni = models.IntegerField(blank=True)
+    responsabledni = models.IntegerField(blank=True, null=True)
     domicilio = models.CharField(max_length=250, blank=True, null=True)
 
     def __str__(self):
