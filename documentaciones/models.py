@@ -18,6 +18,7 @@ class Documentacion(models.Model):
         ('M', 'Materiales'),
         ('C', 'Certificado'),
         ('A', 'Contrato o Alquiler'),
+        ('P', 'Pago Servicios'),
     )
 
     estado = models.CharField(
