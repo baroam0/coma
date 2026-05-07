@@ -64,8 +64,8 @@ def crear_documentacion(request):
         if form.is_valid():
             material=form.save()
             nuevo_id=material.id
-            messages.success(request, "Material grabado correctamente.") 
-            return redirect('editar_material', pk=nuevo_id)
+            messages.success(request, "Documentacion grabada correctamente.") 
+            return redirect('editar_documentacion', pk=nuevo_id)
     else:
         form = DocumentacionForm()
 
