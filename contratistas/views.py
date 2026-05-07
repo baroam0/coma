@@ -118,3 +118,7 @@ def eliminar_paciente(request, pk):
 
 
 # Create your views here.
+
+
+
+# Create your views here.
