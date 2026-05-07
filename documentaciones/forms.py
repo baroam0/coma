@@ -23,6 +23,7 @@ class DocumentacionForm(forms.ModelForm):
             'nomenclatura',
             'descripcion',
             'monto',
+            'contratista',
             'decreto',
             'fechadecreto',
             'observaciones',
@@ -43,6 +44,7 @@ class DocumentacionForm(forms.ModelForm):
             'nomenclatura': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nro Expediente'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripcion'}),
             'monto': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Monto'}),
+            'contratista': forms.Select(attrs={'class': 'form-control'}),
             'decreto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Decreto'}),
             'fechadecreto': forms.DateInput(attrs={
                 'type': 'date',

@@ -1,4 +1,7 @@
+
 from django.db import models
+
+from contratistas.models import Contratista
 
 
 class Documentacion(models.Model):
@@ -32,6 +35,9 @@ class Documentacion(models.Model):
         null=True,
         blank=True
     )
+
+    contratista = models.ForeignKey(
+        Contratista, on_delete=models.CASCADE, null=True, blank=True)
 
     fechanota = models.DateField(null=True, blank=True)
     nota = models.CharField(max_length=10, unique=True, null=True, blank=True, default=None)
