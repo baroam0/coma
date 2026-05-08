@@ -66,6 +66,8 @@ def crear_documentacion(request):
             nuevo_id=material.id
             messages.success(request, "Documentacion grabada correctamente.") 
             return redirect('editar_documentacion', pk=nuevo_id)
+        else:
+            messages.error(request, "Hay errores en el formulario.") 
     else:
         form = DocumentacionForm()
 
