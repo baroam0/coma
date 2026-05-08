@@ -67,7 +67,7 @@ def crear_documentacion(request):
             messages.success(request, "Documentacion grabada correctamente.") 
             return redirect('editar_documentacion', pk=nuevo_id)
         else:
-            messages.error(request, "Hay errores en el formulario.") 
+            messages.warning(request, "Hay errores en el formulario.") 
     else:
         form = DocumentacionForm()
 
@@ -87,7 +87,7 @@ def editar_documentacion(request, pk):
             messages.success(request, "Documentacion actualizada correctamente.") 
             return redirect('/documentaciones/editar/' + str(pk))
         else:
-            messages.error(request, "Hay errores en el formulario.") 
+            messages.warning(request, "Hay errores en el formulario.") 
     
     else:
         form = DocumentacionForm(instance=documentacion)
