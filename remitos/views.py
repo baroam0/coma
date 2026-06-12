@@ -9,8 +9,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import RemitoForm
-from .models import Remito
+from .forms import RemitoForm, DetalleRemitoForm
+from .models import Remito, DetalleRemito
 
 
 @login_required
@@ -51,8 +51,8 @@ def crear_remito(request):
         if form.is_valid():
             material=form.save()
             nuevo_id=material.id
-            messages.success(request, "Material grabado correctamente.") 
-            return redirect('editar_material', pk=nuevo_id)
+            messages.success(request, "Remito  grabado correctamente.") 
+            return redirect('editar_remito', pk=nuevo_id)
     else:
         form = RemitoForm()
 
@@ -62,10 +62,11 @@ def crear_remito(request):
 
 @login_required
 def editar_remito(request, pk):
-    material = get_object_or_404(Remito, pk=pk)
+    remito = get_object_or_404(Remito, pk=pk)
+    detallesremito = DetalleRemito.objects.filter(remito=remito)
 
     if request.method == 'POST':
-        form = RemitoForm(request.POST, instance=material)
+        form = RemitoForm(request.POST, instance=remito)
 
         if form.is_valid():
             form.save()
@@ -75,43 +76,17 @@ def editar_remito(request, pk):
             messages.error(request, "Hay errores en el formulario.") 
     
     else:
-        form = RemitoForm(instance=material)
+        form = RemitoForm(instance=remito)
 
     context = {
         'form': form,
+        'detallesremito': detallesremito,
         'accion': 'Editar',
         'pk': pk
     }
-    return render(request, 'materiales/crear_material.html', context)
+    return render(request, 'remitos/crear_remito.html', context)
 
-
-"""
-@login_required
-def eliminar_paciente(request, pk):
-    paciente = Paciente.objects.get(pk=pk)
-    historiaclinica = HistoriaClinica.objects.filter(paciente=paciente)
-
-    if request.method == "POST":
-        historiaclinica.delete()
-        paciente.delete()
-        return redirect(
-            reverse(
-                "listar_pacientes"
-            )
-        )
-
-    return render(
-        request, 
-        "pacientes/eliminar_paciente.html", 
-        {
-            "historiaclinica": historiaclinica,
-            "paciente": paciente
-        }
-    )
-"""
 
 
 # Create your views here.
-
-
 

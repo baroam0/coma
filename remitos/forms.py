@@ -1,9 +1,10 @@
 
 from django import forms
-from .models import Remito
+from .models import Remito, DetalleRemito
 
 from contratistas.models import Contratista
 from documentaciones.models import Documentacion
+from materiales.models import Material
 
 
 class RemitoForm(forms.ModelForm):
@@ -42,3 +43,26 @@ class RemitoForm(forms.ModelForm):
         ).order_by('-id')
 
         self.fields['destinatario'].queryset = Contratista.objects.all().order_by('-descripcion')
+
+
+class DetalleRemitoForm(forms.ModelForm):
+    class Meta:
+        model = DetalleRemito
+    
+        fields = [
+            'material',
+            'cantidad'
+        ]
+
+        widgets = {
+            'material': forms.Select(
+                attrs={'class': 'form-control'}
+            ),
+            'cantidad': forms.NumberInput(
+                attrs={'class': 'form-control'}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['material'].queryset = Material.objects.none()
