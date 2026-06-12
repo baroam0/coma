@@ -30,6 +30,7 @@ urlpatterns = [
     path('documentaciones/', include('documentaciones.urls')),
     path('contratistas/', include('contratistas.urls')),
     path('materiales/', include('materiales.urls')),
+    path('remitos/', include('remitos.urls')),
     path('salir/', salir, name="salir"),   
 ]
 

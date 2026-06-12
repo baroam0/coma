@@ -1,0 +1,117 @@
+
+import json
+
+from django.core.paginator import Paginator
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.urls import reverse
+from django.utils import timezone
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
+
+from .forms import RemitoForm
+from .models import Remito
+
+
+@login_required
+def listar_remitos(request):
+    resultados = Remito.objects.order_by('-id')[:30]
+    return render(request, 'remitos/lista_remitos.html', {'results': resultados})
+
+
+@login_required
+def buscar_remitos(request):
+    parametro = request.GET.get('q', '')
+
+    if parametro:
+        resultados = Remito.objects.filter(
+            descripcion__icontains=parametro
+        ).order_by("descripcion")
+    else:
+        resultados = Remito.objects.order_by('-id')[:30]
+
+    data = list()
+    tmpdict = dict()
+
+    for r in resultados:
+        tmpdict = {
+            "id": r.pk,
+            "descripcion": r.descripcion
+        } 
+
+    return JsonResponse({
+        "results": data,
+    })
+
+
+@login_required
+def crear_remito(request):
+    if request.method == 'POST':
+        form = RemitoForm(request.POST)
+        if form.is_valid():
+            material=form.save()
+            nuevo_id=material.id
+            messages.success(request, "Material grabado correctamente.") 
+            return redirect('editar_material', pk=nuevo_id)
+    else:
+        form = RemitoForm()
+
+    return render(request, 'remitos/crear_remito.html', {
+        'form': form, 'accion': 'Nuevo '})
+
+
+@login_required
+def editar_remito(request, pk):
+    material = get_object_or_404(Remito, pk=pk)
+
+    if request.method == 'POST':
+        form = RemitoForm(request.POST, instance=material)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Remito actualizado correctamente.") 
+            return redirect('/remitos/editar/' + str(pk))
+        else:
+            messages.error(request, "Hay errores en el formulario.") 
+    
+    else:
+        form = RemitoForm(instance=material)
+
+    context = {
+        'form': form,
+        'accion': 'Editar',
+        'pk': pk
+    }
+    return render(request, 'materiales/crear_material.html', context)
+
+
+"""
+@login_required
+def eliminar_paciente(request, pk):
+    paciente = Paciente.objects.get(pk=pk)
+    historiaclinica = HistoriaClinica.objects.filter(paciente=paciente)
+
+    if request.method == "POST":
+        historiaclinica.delete()
+        paciente.delete()
+        return redirect(
+            reverse(
+                "listar_pacientes"
+            )
+        )
+
+    return render(
+        request, 
+        "pacientes/eliminar_paciente.html", 
+        {
+            "historiaclinica": historiaclinica,
+            "paciente": paciente
+        }
+    )
+"""
+
+
+# Create your views here.
+
+
+

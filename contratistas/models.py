@@ -10,7 +10,8 @@ class Contratista(models.Model):
     domicilio = models.CharField(max_length=250, blank=True, null=True)
 
     def __str__(self):
-        return self.descripcion.upper()
+        return (self.descripcion or f"Contratista #{self.pk}").upper()
+
     
     class Meta:
         verbose_name_plural = "Contratistas"

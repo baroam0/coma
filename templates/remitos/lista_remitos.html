@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    #tablaPacientesTurnos tbody tr {
+        background-color: #ffe6f2; /* rosa suave */
+    }
+
+    #tablaPacientesTurnos tbody tr:hover {
+        background-color: #ffccd9 !important; /* rosa un poco más fuerte */
+    }
+</style>
+
+
+<div class="container-fluid">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h4 class="h4 text-gray-800">Listado de Remitos </h4>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                {{message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form action="/remitos/lista/" method="GET" class="mb-3">
+        <div class="input-group">
+            <input class="form-control" id="txtBuscar" name="txtBuscar" placeholder="Nombre de Cooperativa, materiales u obra">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary" title="Nuevo Producto" onclick="location.href='/remitos/crear/'">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla responsiva -->
+    <div class="table-responsive">
+        <table class="table table-hover table-sm" id="tablaMateriales">
+            <thead class="thead-light">
+                <tr>
+                    <th>Descripcion </th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyMateriales">
+                {% for r in results %}
+                <tr>
+                    <td>{{ r.descripcion.upper }}</td>
+                    <td>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/{{ r.pk }}'">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>    
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+
+document.getElementById("txtBuscar").addEventListener("keyup", function() {
+    const query = this.value.trim();
+
+    if (query.length < 3) {
+        actualizarVista([]);
+        return;
+    }
+
+    fetch(`/materiales/buscar?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => actualizarVista(data));
+});
+
+
+function actualizarVista(data) {
+    let tbody = document.getElementById("tbodyMateriales");
+    tbody.innerHTML = "";
+
+    data.results.forEach(p => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${p.descripcion.toUpperCase()}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/${p.id}'">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+}
+
+
+</script>
+{% endblock %}
