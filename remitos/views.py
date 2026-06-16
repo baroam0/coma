@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RemitoForm, DetalleRemitoForm
 from .models import Remito, DetalleRemito
+from materiales.models import Material
 
 
 @login_required
@@ -67,7 +68,6 @@ def editar_remito(request, pk):
 
     if request.method == 'POST':
         form = RemitoForm(request.POST, instance=remito)
-
         if form.is_valid():
             form.save()
             messages.success(request, "Remito actualizado correctamente.") 
@@ -85,6 +85,31 @@ def editar_remito(request, pk):
         'pk': pk
     }
     return render(request, 'remitos/crear_remito.html', context)
+
+
+def ajax_detalle_remito(request, pk):
+    detalle = get_object_or_404(DetalleRemito, pk=pk)
+
+    if request.method == "GET":
+        #materiales = list(Material.objects.values("id", "descripcion"))
+        materiales = list(Material.objects.values("id", "descripcion"))
+        return JsonResponse({
+            "id": detalle.id,
+            "material": detalle.material.id,
+            "cantidad": float(detalle.cantidad),
+            "materiales": materiales
+        })
+
+    # POST → guardar cambios
+    if request.method == "POST":
+        detalle.material_id = request.POST.get("material")
+        detalle.cantidad = request.POST.get("cantidad")
+        detalle.save()
+
+        return JsonResponse({"ok": True})
+
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
 
 
 

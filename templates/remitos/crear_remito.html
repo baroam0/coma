@@ -74,27 +74,128 @@
                 </div>
             </form>
 
-            <table>
+
+            <div id="ajax-detalle-form" class="card shadow p-3 mt-4" style="display:none;">
+                <h5 class="text-gray-800">Editar Detalle</h5>
+                <form id="form-detalle-remito">
+                    <input type="hidden" id="detalle_id">
+
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select id="detalle_material" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cantidad</label>
+                        <input type="number" id="detalle_cantidad" class="form-control">
+                    </div>
+
+                    <button type="button" class="btn btn-primary" onclick="guardarDetalle()">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                </form>
+            </div>
+
+            <table class="table table-bordered" id="tbl-detalleremito" width="100%" cellspacing="0">
                 <thead>
-                    <th></th>
+                    <tr>
+                    <th>Material</th>
+                    <th>Cantidad</th>
+                    <th>Editar</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                </tbody>
+                    {% for d in detallesremito%}
+                        <tr>
+                            <td>{{d.material.descripcion}}</td>
+                            <td>{{d.cantidad}}</td>
+                            <td>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="editarDetalle({{ d.pk }})">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
 
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
 </div>
 {% endblock %}
 
-
 {% block js %}
 <script>
-        
+    
+    $(document).ready(function() {
+        $('#id_destino').select2();
+
+        $('#detalle_material').select2({
+            width: '100%',
+            placeholder: "Buscar material...",
+            minimumInputLength: 3,
+            ajax: {
+                url: "/remitos/buscar-materiales/",
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        q: params.term
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data.results
+                    };
+                }
+            }
+        });
+
+
+
+    });
+
+    function cancelarEdicion() {
+        $("#ajax-detalle-form").slideUp();
+    }
+
+    function editarDetalle(id) {
+        $.get(`/remitos/ajaxdetalleremito/${id}/`, function(data) {
+            $("#detalle_id").val(data.id);
+            let select = $("#detalle_material");
+            select.empty();
+            data.materiales.forEach(m => {
+                select.append(new Option(m.descripcion, m.id));
+            });
+            select.val(data.material);
+            $("#detalle_cantidad").val(data.cantidad);
+            $("#ajax-detalle-form").slideDown();
+        });
+    }
+
+
+    function guardarDetalle() {
+        let id = $("#detalle_id").val();
+
+        $.post(`/remitos/ajaxdetalleremito/${id}/`, {
+            material: $("#detalle_material").val(),
+            cantidad: $("#detalle_cantidad").val(),
+            csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+        }, function(resp) {
+            if (resp.ok) {
+                location.reload();
+            }
+        });
+
+    }
+
     function Volver() {
         window.location.replace("/remitos/lista/");
-    }
+    }    
 
 </script>
 {% endblock %}

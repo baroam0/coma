@@ -28,7 +28,7 @@ class Remito(models.Model):
         max_length=250, null=True, blank=True)
     
     def __str__(self):
-        return str(self.pk)
+        return str(self.fecha) + '-' + str(self.pk)
     
     class Meta:
         verbose_name_plural="Remitos"

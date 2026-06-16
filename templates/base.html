@@ -21,6 +21,8 @@
     <!-- Custom styles for this template-->
     <!--link href="css/sb-admin-2.min.css" rel="stylesheet"-->
     <link href="{% static 'css/sb-admin-2.min.css'%}" rel="stylesheet" type="text/css">
+    <link href="{% static 'css/select2.min.css'%}" rel="stylesheet" type="text/css">
+
 
     <!-- FullCalendar -->
     <link href="{% static 'css/full-calendar-main.css'%}" rel="stylesheet" type="text/css">
@@ -68,67 +70,6 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-
-            <!--li class="nav-item">
-                <a class="nav-link" href="/cosmiatras/cosmetologa/lista/">
-                    <i class="fas fa-fw fa-user-nurse"></i>
-                    <span>Cosmiatras</span>
-                </a>
-            </li>
-
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCaja"
-                    aria-expanded="true" aria-controls="collapseCaja">
-
-                    <span> <i class="fas fa-piggy-bank"> </i> Caja</span>
-                </a>
-                <div id="collapseCaja" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        
-                        {% if user.is_staff %}
-                        <a class="collapse-item" href="/ingresos/listarcategorias/">
-                            <i class="fas fa-list"></i>
-                            Categorias Ingresos
-                        </a>
-                        {% endif %}
-
-                        
-                        <a class="collapse-item" href="/ingresos/senias/">
-                            <i class="fas fa-money-bill-alt"></i>
-                            Señas
-                        </a>
-
-                        {% if user.is_staff %}
-                        <a class="collapse-item" href="/ingresos/ingresos3/">
-                            <i class="fas fa-fw fa-money-bill-wave"></i>
-                            <span>Ingresos/Egresos</span>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </li>
-            
-            <!--li class="nav-item">
-                <a class="nav-link" href="/ingresos/ingresos/">
-                    <i class="fas fa-fw fa-money-bill-wave"></i>
-                    <span>Ingresos/Egresos</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/ingresos/ingresos2/">
-                    <i class="fas fa-fw fa-money-bill-wave"></i>
-                    <span>Ingresos/Egresos 2</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="/ingresos/ingresos3/">
-                    <i class="fas fa-fw fa-money-bill-wave"></i>
-                    <span>Ingresos/Egresos</span>
-                </a>
-            </li-->
 
             <li class="nav-item">
                 <a class="nav-link" href="/documentaciones/lista/">
@@ -306,6 +247,9 @@
 
     <!-- FullCalendar -->
     <script src="{% static 'js/full-calendar.min.js'%}"></script>
+
+    <!-- Select2 -->
+    <script src="{% static 'js/select2.min.js'%}"></script>
 
 
     {% if user.is_staff %}

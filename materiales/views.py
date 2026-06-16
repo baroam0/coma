@@ -25,28 +25,19 @@ def buscar_materiales(request):
     page_number = request.GET.get('page', 1)
 
     if parametro:
-        pacientes = Material.objects.filter(
+        materiales = Material.objects.filter(
             descripcion__icontains=parametro
-        ).order_by("descripcion")
+        ).order_by("descripcion")[:300]
     else:
-        pacientes = Material.objects.none()
-
-    paginator = Paginator(pacientes, 500)
-    page_obj = paginator.get_page(page_number)
+        materiales = Material.objects.none()
 
     data = [{
         "id": p.pk,
-        "descripcion": p.descripcion
-    } for p in page_obj]
+        "text": p.descripcion
+    } for p in materiales]
 
     return JsonResponse({
-        "results": data,
-        "page": page_obj.number,
-        "total_pages": paginator.num_pages,
-        "has_next": page_obj.has_next(),
-        "has_previous": page_obj.has_previous(),
-        "next_page": page_obj.next_page_number() if page_obj.has_next() else None,
-        "prev_page": page_obj.previous_page_number() if page_obj.has_previous() else None,
+        "results": data
     })
 
 

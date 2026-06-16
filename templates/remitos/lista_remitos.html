@@ -36,7 +36,7 @@
         <div class="input-group">
             <input class="form-control" id="txtBuscar" name="txtBuscar" placeholder="Nombre de Cooperativa, materiales u obra">
             <div class="input-group-append">
-                <button type="button" class="btn btn-primary" title="Nuevo Producto" onclick="location.href='/remitos/crear/'">
+                <button type="button" class="btn btn-primary" title="Nuevo Remito" onclick="location.href='/remitos/crear/'">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
@@ -48,16 +48,20 @@
         <table class="table table-hover table-sm" id="tablaMateriales">
             <thead class="thead-light">
                 <tr>
-                    <th>Descripcion </th>
+                    <th>Remito </th>
+                    <th>Destino </th>
+                    <th>Responsable </th>
                     <th>Editar</th>
                 </tr>
             </thead>
             <tbody id="tbodyMateriales">
                 {% for r in results %}
                 <tr>
-                    <td>{{ r.descripcion.upper }}</td>
+                    <td>{{ r.fecha }} - {{r.pk}} </td>
+                    <td>{{ r.destino }} </td>
+                    <td>{{ r.destinatario.descripcion.upper }} </td>
                     <td>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/{{ r.pk }}'">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/remitos/editar/{{ r.pk }}'">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
                     </td>
