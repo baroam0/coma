@@ -5,7 +5,7 @@
     <div class="card o-hidden border-0 shadow-lg my-4">
         <div class="card-body p-4">
             <div class="text-center mb-4">
-                <h1 class="h4 text-gray-900">{{ accion }} Remito </h1>
+                <h1 class="h4 text-gray-900">{{ accion }} Remito. </h1>
             </div>
 
             {% if messages %}
@@ -25,7 +25,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="id_fecha">Fecha</label>
-                        {{ form.fecha }}
+                            {{ form.fecha }}
                     </div>
                 </div>
 
@@ -60,17 +60,41 @@
 
                 <!-- Botones -->
                 <div class="form-row mt-4">
-                    <div class="col-md-6 mb-2">
-                        <button type="submit" class="btn btn-primary btn-block">
-                            <i class="fas fa-save"></i>
-                            Guardar
-                        </button>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <button type="button" class="btn btn-secondary btn-block" onclick="Volver()">
-                            <i class="fas fa-undo"></i> Volver
-                        </button>
-                    </div>
+                    
+                    
+
+                    {% if pk%}
+                        <div class="col-md-4 mb-2">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i>
+                                Guardar
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <button type="button" class="btn btn-secondary btn-block" onclick="Volver()">
+                                <i class="fas fa-undo"></i> Volver
+                            </button>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <button type="button" class="btn btn-success btn-block" onclick="agregarDetalle({{pk}})">
+                                <i class="fas fa-plus"></i> Agregar Detalle
+                            </button>
+                        </div>
+                    {%else%}
+                        <div class="col-md-6 mb-2">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i>
+                                Guardar
+                            </button>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <button type="button" class="btn btn-secondary btn-block" onclick="Volver()">
+                                <i class="fas fa-undo"></i> Volver
+                            </button>
+                        </div>
+                    {% endif %}
+
                 </div>
             </form>
 
@@ -78,6 +102,7 @@
             <div id="ajax-detalle-form" class="card shadow p-3 mt-4" style="display:none;">
                 <h5 class="text-gray-800">Editar Detalle</h5>
                 <form id="form-detalle-remito">
+                    <input type="hidden" id="remito_id">
                     <input type="hidden" id="detalle_id">
 
                     <div class="form-group">
@@ -132,6 +157,7 @@
 <script>
     
     $(document).ready(function() {
+
         $('#id_destino').select2();
 
         $('#detalle_material').select2({
@@ -155,44 +181,54 @@
             }
         });
 
-
-
     });
+
 
     function cancelarEdicion() {
         $("#ajax-detalle-form").slideUp();
     }
 
+
+    function agregarDetalle() {
+        $("#detalle_id").val(0);
+        $("#remito_id").val({{pk}});
+        $("#detalle_material").val(null).trigger("change");
+        $("#detalle_cantidad").val("");
+        $("#ajax-detalle-form").slideDown();
+    }
+    
+
     function editarDetalle(id) {
         $.get(`/remitos/ajaxdetalleremito/${id}/`, function(data) {
+
             $("#detalle_id").val(data.id);
+
             let select = $("#detalle_material");
-            select.empty();
-            data.materiales.forEach(m => {
-                select.append(new Option(m.descripcion, m.id));
-            });
-            select.val(data.material);
+
+            // Cargar solo el material actual
+            let option = new Option(data.material_text, data.material, true, true);
+            select.append(option).trigger('change');
+
             $("#detalle_cantidad").val(data.cantidad);
+
             $("#ajax-detalle-form").slideDown();
         });
     }
 
-
     function guardarDetalle() {
-        let id = $("#detalle_id").val();
+        let id = $("#detalle_id").val();  // 0 = nuevo
+        let url = `/remitos/ajaxdetalleremito/${id}/`;
 
-        $.post(`/remitos/ajaxdetalleremito/${id}/`, {
+        $.post(url, {
+            remito: $("#remito_id").val(),
             material: $("#detalle_material").val(),
             cantidad: $("#detalle_cantidad").val(),
             csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
         }, function(resp) {
-            if (resp.ok) {
-                location.reload();
-            }
+            if (resp.ok) location.reload();
         });
-
     }
-
+    
     function Volver() {
         window.location.replace("/remitos/lista/");
     }    

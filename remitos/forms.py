@@ -17,9 +17,11 @@ class RemitoForm(forms.ModelForm):
             'destino',
             'textodestino',
         ]
+
         widgets = {
             'fecha': forms.DateInput(
-                attrs={'class': 'form-control', 'type': 'date'}
+                attrs={'type': 'date', 'class': 'form-control'},
+                format='%Y-%m-%d'
             ),
             'destinatario': forms.Select(
                 attrs={'class': 'form-control'}

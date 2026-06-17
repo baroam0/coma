@@ -94,7 +94,7 @@ function actualizarVista(data) {
     data.results.forEach(p => {
         tbody.innerHTML += `
             <tr>
-                <td>${p.descripcion.toUpperCase()}</td>
+                <td>${p.text.toUpperCase()}</td>
                 <td>
                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/${p.id}'">
                         <i class="fas fa-pencil-alt"></i>

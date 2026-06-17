@@ -1,6 +1,7 @@
 
 import json
 
+from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -25,9 +26,14 @@ def buscar_remitos(request):
     parametro = request.GET.get('q', '')
 
     if parametro:
+
         resultados = Remito.objects.filter(
-            descripcion__icontains=parametro
-        ).order_by("descripcion")
+            Q(destinatario__nombre__icontains=parametro) |
+            Q(textodestinatario__icontains=parametro) |
+            Q(destino__descripcion__icontains=parametro) |
+            Q(textodestino__icontains=parametro) |
+            Q(detalleremito__material__descripcion__icontains=parametro)
+        ).distinct().order_by('-id')
     else:
         resultados = Remito.objects.order_by('-id')[:30]
 
@@ -88,24 +94,35 @@ def editar_remito(request, pk):
 
 
 def ajax_detalle_remito(request, pk):
+    if pk == 0:
+        if request.method == "POST":
+            DetalleRemito.objects.create(
+                remito_id=request.POST.get("remito"),
+                material_id=request.POST.get("material"),
+                cantidad=request.POST.get("cantidad")
+            )
+            return JsonResponse({"ok": True})
+
+        return JsonResponse({"error": "Método no permitido"}, status=405)
+
     detalle = get_object_or_404(DetalleRemito, pk=pk)
 
     if request.method == "GET":
-        #materiales = list(Material.objects.values("id", "descripcion"))
-        materiales = list(Material.objects.values("id", "descripcion"))
         return JsonResponse({
             "id": detalle.id,
             "material": detalle.material.id,
-            "cantidad": float(detalle.cantidad),
-            "materiales": materiales
+            "material_text": detalle.material.descripcion,
+            "cantidad": float(detalle.cantidad)
         })
 
-    # POST → guardar cambios
     if request.method == "POST":
         detalle.material_id = request.POST.get("material")
         detalle.cantidad = request.POST.get("cantidad")
-        detalle.save()
 
+        if request.POST.get("remito"):
+            detalle.remito_id = request.POST.get("remito")
+
+        detalle.save()
         return JsonResponse({"ok": True})
 
     return JsonResponse({"error": "Método no permitido"}, status=405)
