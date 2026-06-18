@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Imprimir Remito</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        /* -------------------------
+           BANNER HORIZONTAL
+        --------------------------*/
+        .banner {
+            width: 100%;
+            border-bottom: 3px solid #000;
+            margin-bottom: 20px;
+
+            display: flex;
+            flex-direction: row;      /* Logo izquierda, texto derecha */
+            justify-content: space-between;
+            align-items: center;      /* Alineación vertical */
+            padding: 20px;
+        }
+
+        .banner-logo img {
+            width: 120px;   /* Ajustá el tamaño del logo */
+            height: auto;
+            object-fit: contain;
+        }
+
+        .banner-info {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+            background: transparent;
+        }
+
+        h2, h3 {
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 6px;
+            text-align: left;
+        }
+
+        .no-print {
+            margin-bottom: 20px;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            .banner {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .banner-info {
+                background: transparent !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="no-print">
+    <button onclick="window.print()" class="btn btn-primary">🖨️ Imprimir</button>
+</div>
+
+<!-- BANNER COMPLETO -->
+<div class="banner">
+    <div class="banner-logo">
+        <img src="/static/img/logo2.png" alt="Logo Empresa">
+    </div>
+
+    <div class="banner-info">
+        <strong>Secretaria de Obras Públicas</strong><br>
+        <strong>Dirección de Obras Públicas</strong><br>
+        Fotheringham 1364<br>
+    </div>
+</div>
+
+<h2>Remito Nº {{ remito.id }}</h2>
+<h3>Fecha: {{ remito.fecha }}</h3>
+
+<p><strong>Destinatario:</strong> 
+    {{ remito.destinatario|default_if_none:"" }} {{ remito.textodestinatario|default_if_none:"" }}
+</p>
+
+<p><strong>Destino:</strong> 
+    {{ remito.destino|default_if_none:"" }} {{ remito.textodestino|default_if_none:"" }}
+</p>
+
+<hr>
+
+<h3>Detalle de Materiales</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Material</th>
+            <th>Cantidad</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in detalles %}
+        <tr>
+            <td>{{ d.material.descripcion }}</td>
+            <td>{{ d.cantidad }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

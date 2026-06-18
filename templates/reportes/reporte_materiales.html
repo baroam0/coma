@@ -1,0 +1,54 @@
+<h2>Reporte de Materiales Ocupados</h2>
+
+<form method="GET">
+    <label>Fecha desde:</label>
+    <input type="date" name="fecha_desde">
+
+    <label>Fecha hasta:</label>
+    <input type="date" name="fecha_hasta">
+
+    <label>Destino:</label>
+    <select name="destino">
+        <option value="">Todos</option>
+        {% for d in destinos %}
+            <option value="{{ d.id }}">{{ d.descripcion }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Destinatario:</label>
+    <select name="destinatario">
+        <option value="">Todos</option>
+        {% for c in destinatarios %}
+            <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Filtrar</button>
+</form>
+
+<br>
+
+<a href="?export=excel" class="btn btn-success">Exportar a Excel</a>
+
+<hr>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Material</th>
+            <th>Total utilizado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in resultados %}
+        <tr>
+            <td>{{ item.material__descripcion }}</td>
+            <td>{{ item.total }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="2">No hay resultados</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

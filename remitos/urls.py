@@ -12,6 +12,8 @@ urlpatterns = [
     path('editar/<int:pk>', views.editar_remito, name='editar_remito'),
     path('ajaxdetalleremito/<int:pk>/', views.ajax_detalle_remito, name="ajax_detalle_remito"),
     path("buscar-materiales/", buscar_materiales, name="buscar_materiales"),
+    path("imprimir/<int:remito_id>/", views.imprimir_remito, name="imprimir_remito"),
+
 
 
     #path('eliminar/<int:pk>', views.eliminar_paciente, name='eliminar_paciente'),

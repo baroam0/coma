@@ -64,23 +64,32 @@
                     
 
                     {% if pk%}
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-3 mb-2">
                             <button type="submit" class="btn btn-primary btn-block">
                                 <i class="fas fa-save"></i>
                                 Guardar
                             </button>
                         </div>
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-3 mb-2">
                             <button type="button" class="btn btn-secondary btn-block" onclick="Volver()">
                                 <i class="fas fa-undo"></i> Volver
                             </button>
                         </div>
 
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-3 mb-2">
                             <button type="button" class="btn btn-success btn-block" onclick="agregarDetalle({{pk}})">
                                 <i class="fas fa-plus"></i> Agregar Detalle
                             </button>
                         </div>
+
+                        <div class="col-md-3 mb-2">
+                            <button type="button" 
+                                class="btn btn-secondary btn-block" 
+                                onclick="imprimirRemito({{ pk }})">
+                                <i class="fas fa-print"></i> Imprimir Remito
+                            </button>
+                        </div>
+
                     {%else%}
                         <div class="col-md-6 mb-2">
                             <button type="submit" class="btn btn-primary btn-block">
@@ -182,6 +191,11 @@
         });
 
     });
+
+
+    function imprimirRemito(pk) {
+        window.open(`/remitos/imprimir/${pk}/`, "_blank");
+    }
 
 
     function cancelarEdicion() {

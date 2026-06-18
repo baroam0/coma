@@ -128,6 +128,14 @@ def ajax_detalle_remito(request, pk):
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
 
+def imprimir_remito(request, remito_id):
+    remito = get_object_or_404(Remito, pk=remito_id)
+    detalles = DetalleRemito.objects.filter(remito=remito)
+
+    return render(request, "remitos/imprimir_remito.html", {
+        "remito": remito,
+        "detalles": detalles
+    })
 
 
 # Create your views here.
