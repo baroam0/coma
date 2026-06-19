@@ -1,7 +1,7 @@
 
 import json
 
-from django.db.models import Q
+from django.db.models import Sum, Q
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RemitoForm, DetalleRemitoForm
 from .models import Remito, DetalleRemito
+from documentaciones.models import Contratista, Documentacion
 from materiales.models import Material
 
 
@@ -136,6 +137,59 @@ def imprimir_remito(request, remito_id):
         "remito": remito,
         "detalles": detalles
     })
+
+
+@login_required
+def reporte_materiales(request):
+    fecha_desde = request.GET.get("desde")
+    fecha_hasta = request.GET.get("hasta")
+    destinatario_id = request.GET.get("destinatario")
+    destino_id = request.GET.get("destino")
+
+    qs = DetalleRemito.objects.select_related(
+        "remito",
+        "material"       
+    )
+
+    if fecha_desde:
+        qs = qs.filter(remito__fecha__gte=fecha_desde)
+
+    if fecha_hasta:
+        qs = qs.filter(remito__fecha__lte=fecha_hasta)
+
+    if destinatario_id:
+        qs = qs.filter(remito__destinatario_id=destinatario_id)
+
+    if destino_id:
+        qs = qs.filter(remito__destino_id=destino_id)
+
+    reporte = qs.values(
+        "remito__fecha",
+        "material__descripcion",
+        "remito__destinatario__descripcion",
+        "remito__destino__descripcion"
+    ).annotate(
+        total=Sum("cantidad")
+    ).order_by("remito__fecha")
+
+    if destinatario_id or destino_id:
+        data = []
+        for r in reporte:
+            data.append({
+                "fecha": r["remito__fecha"],
+                "material": r["material__descripcion"],
+                "total": float(r["total"]) if r["total"] else 0,
+                "destinatario": r["remito__destinatario__descripcion"],
+                "destino": r["remito__destino__descripcion"],
+            })
+
+        return JsonResponse({"results": data})
+    else:
+
+        return render(request, "reportes/reporte_materiales.html", {
+            "destinatarios": Contratista.objects.all(),
+            "destinos": Documentacion.objects.all(),
+        })
 
 
 # Create your views here.

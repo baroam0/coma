@@ -1,54 +1,127 @@
-<h2>Reporte de Materiales Ocupados</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Materiales</title>
 
-<form method="GET">
-    <label>Fecha desde:</label>
-    <input type="date" name="fecha_desde">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
 
-    <label>Fecha hasta:</label>
-    <input type="date" name="fecha_hasta">
+        h2 {
+            margin-bottom: 20px;
+        }
 
-    <label>Destino:</label>
-    <select name="destino">
-        <option value="">Todos</option>
-        {% for d in destinos %}
-            <option value="{{ d.id }}">{{ d.descripcion }}</option>
-        {% endfor %}
-    </select>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
 
-    <label>Destinatario:</label>
-    <select name="destinatario">
-        <option value="">Todos</option>
-        {% for c in destinatarios %}
-            <option value="{{ c.id }}">{{ c.nombre }}</option>
-        {% endfor %}
-    </select>
+        table, th, td {
+            border: 1px solid #444;
+        }
 
-    <button type="submit">Filtrar</button>
-</form>
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
 
-<br>
+        .no-print {
+            margin-bottom: 20px;
+        }
 
-<a href="?export=excel" class="btn btn-success">Exportar a Excel</a>
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
 
-<hr>
+    <script>
+        function cargarReporte() {
+            const desde = document.getElementById("desde").value;
+            const hasta = document.getElementById("hasta").value;
+            const destinatario = document.getElementById("destinatario").value;
+            const destino = document.getElementById("destino").value;
 
-<table border="1">
+            const url = `/remitos/reporte-materiales?desde=${desde}&hasta=${hasta}&destinatario=${destinatario}&destino=${destino}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.getElementById("tbody-reporte");
+                    tbody.innerHTML = "";
+
+                    data.results.forEach(item => {
+                        const row = `
+                            <tr>
+                                <td>${item.fecha}</td>
+                                <td>${item.material}</td>
+                                <td>${item.total}</td>
+                                <td>${item.destinatario || ""}</td>
+                                <td>${item.destino || ""}</td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                });
+        }
+    </script>
+</head>
+
+<body>
+
+<h2>Reporte de Materiales</h2>
+
+<div class="no-print">
+    <form onsubmit="event.preventDefault(); cargarReporte();">
+
+        <label>Desde:</label>
+        <input type="date" id="desde">
+
+        <label>Hasta:</label>
+        <input type="date" id="hasta">
+
+        <label>Destinatario:</label>
+        <select id="destinatario">
+            <option value="">Todos</option>
+            {% for d in destinatarios %}
+                <option value="{{ d.id }}">{{ d.descripcion }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Destino:</label>
+        <select id="destino">
+            <option value="">Todos</option>
+            {% for d in destinos %}
+                <option value="{{ d.id }}">{{ d.descripcion }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Buscar</button>
+        <button type="button" onclick="window.print()">🖨️ Imprimir</button>
+        <button type="button" onclick="window.location.href='/'">Inicio</button>
+
+    </form>
+</div>
+
+<table>
     <thead>
         <tr>
+            <th>Fecha</th>
             <th>Material</th>
-            <th>Total utilizado</th>
+            <th>Total</th>
+            <th>Destinatario</th>
+            <th>Destino</th>
         </tr>
     </thead>
-    <tbody>
-        {% for item in resultados %}
-        <tr>
-            <td>{{ item.material__descripcion }}</td>
-            <td>{{ item.total }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="2">No hay resultados</td>
-        </tr>
-        {% endfor %}
+    <tbody id="tbody-reporte">
+        <!-- Se llena dinámicamente -->
     </tbody>
 </table>
+
+</body>
+</html>
