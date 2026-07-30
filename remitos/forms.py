@@ -53,11 +53,15 @@ class DetalleRemitoForm(forms.ModelForm):
     
         fields = [
             'material',
+            'unidad',
             'cantidad'
         ]
 
         widgets = {
             'material': forms.Select(
+                attrs={'class': 'form-control'}
+            ),
+            'unidad': forms.Select(
                 attrs={'class': 'form-control'}
             ),
             'cantidad': forms.NumberInput(

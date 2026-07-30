@@ -120,6 +120,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Unidad</label>
+                        <select id="detalle_unidad" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
                         <label>Cantidad</label>
                         <input type="number" id="detalle_cantidad" class="form-control">
                     </div>
@@ -138,21 +143,29 @@
                 <thead>
                     <tr>
                     <th>Material</th>
+                    <th>Unidad</th>
                     <th>Cantidad</th>
                     <th>Editar</th>
+                    <th>Eliminar</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for d in detallesremito%}
                         <tr>
                             <td>{{d.material.descripcion}}</td>
+                            <td>{{d.unidad}}</td>
                             <td>{{d.cantidad}}</td>
                             <td>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="editarDetalle({{ d.pk }})">
                                     <i class="fas fa-pencil-alt"></i>
                                 </button>
-
                             </td>
+                            <td>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="eliminarDetalle({{ d.pk }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -189,14 +202,11 @@
                 }
             }
         });
-
     });
-
 
     function imprimirRemito(pk) {
         window.open(`/remitos/imprimir/${pk}/`, "_blank");
     }
-
 
     function cancelarEdicion() {
         $("#ajax-detalle-form").slideUp();
@@ -208,20 +218,31 @@
         $("#remito_id").val({{pk}});
         $("#detalle_material").val(null).trigger("change");
         $("#detalle_cantidad").val("");
+
+        $.get(`/remitos/ajaxdetalleremito/0/`, function(data) {
+            let selectUnidad = $("#detalle_unidad");
+            selectUnidad.empty();
+            data.unidades.forEach(u => {
+                selectUnidad.append(new Option(u.descripcion, u.id));
+            });
+        });
         $("#ajax-detalle-form").slideDown();
     }
-    
 
     function editarDetalle(id) {
-        $.get(`/remitos/ajaxdetalleremito/${id}/`, function(data) {
-
+    $.get(`/remitos/ajaxdetalleremito/${id}/`, function(data) {
             $("#detalle_id").val(data.id);
 
             let select = $("#detalle_material");
-
-            // Cargar solo el material actual
             let option = new Option(data.material_text, data.material, true, true);
             select.append(option).trigger('change');
+
+            let selectUnidad = $("#detalle_unidad");
+            selectUnidad.empty();
+            data.unidades.forEach(u => {
+                selectUnidad.append(new Option(u.descripcion, u.id));
+            });
+            selectUnidad.val(data.unidad);
 
             $("#detalle_cantidad").val(data.cantidad);
 
@@ -237,6 +258,7 @@
             remito: $("#remito_id").val(),
             material: $("#detalle_material").val(),
             cantidad: $("#detalle_cantidad").val(),
+            unidad: $("#detalle_unidad").val(),
             csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
         }, function(resp) {
             if (resp.ok) location.reload();
@@ -246,6 +268,19 @@
     function Volver() {
         window.location.replace("/remitos/lista/");
     }    
+
+    function eliminarDetalle(id) {
+        if (!confirm("¿Eliminar este detalle?")) return;
+
+            $.post(`/remitos/eliminar-detalle/${id}/`, {
+                csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+            }, function(resp) {
+                if (resp.ok) {
+                location.reload();
+            }
+        });
+    }
+
 
 </script>
 {% endblock %}

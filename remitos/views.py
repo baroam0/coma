@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import RemitoForm, DetalleRemitoForm
 from .models import Remito, DetalleRemito
 from documentaciones.models import Contratista, Documentacion
-from materiales.models import Material
+from materiales.models import Material, Unidad
 
 
 @login_required
@@ -96,37 +96,56 @@ def editar_remito(request, pk):
 
 def ajax_detalle_remito(request, pk):
     if pk == 0:
+        if request.method == "GET":
+            unidades = list(Unidad.objects.values("id", "descripcion"))
+            return JsonResponse({
+                "unidades": unidades
+            })
+
         if request.method == "POST":
             DetalleRemito.objects.create(
                 remito_id=request.POST.get("remito"),
                 material_id=request.POST.get("material"),
+                unidad_id=request.POST.get("unidad"),
                 cantidad=request.POST.get("cantidad")
             )
             return JsonResponse({"ok": True})
-
         return JsonResponse({"error": "Método no permitido"}, status=405)
 
     detalle = get_object_or_404(DetalleRemito, pk=pk)
 
     if request.method == "GET":
+        unidades = list(Unidad.objects.values("id", "descripcion"))
         return JsonResponse({
             "id": detalle.id,
             "material": detalle.material.id,
             "material_text": detalle.material.descripcion,
+            "unidad": detalle.unidad.id,
+            "unidad_text": detalle.unidad.descripcion,
+            "unidades": unidades,
             "cantidad": float(detalle.cantidad)
         })
 
     if request.method == "POST":
         detalle.material_id = request.POST.get("material")
         detalle.cantidad = request.POST.get("cantidad")
-
         if request.POST.get("remito"):
             detalle.remito_id = request.POST.get("remito")
-
+        detalle.unidad_id = request.POST.get("unidad")
         detalle.save()
         return JsonResponse({"ok": True})
-
     return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+def eliminar_detalle_remito(request, pk):
+    if request.method == "POST":
+        try:
+            detalle = DetalleRemito.objects.get(pk=pk)
+            detalle.delete()
+            return JsonResponse({"ok": True})
+        except DetalleRemito.DoesNotExist:
+            return JsonResponse({"ok": False, "error": "Detalle no encontrado"})
+    return JsonResponse({"ok": False, "error": "Método no permitido"})
 
 
 def imprimir_remito(request, remito_id):

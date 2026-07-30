@@ -3,7 +3,7 @@ from django.db import models
 
 from contratistas.models import Contratista
 from documentaciones.models import Documentacion
-from materiales.models import Material
+from materiales.models import Material, Unidad
 
 class Remito(models.Model):
     fecha=models.DateField()
@@ -37,6 +37,7 @@ class Remito(models.Model):
 class DetalleRemito(models.Model):
     remito=models.ForeignKey(Remito, on_delete=models.CASCADE)
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    unidad = models.ForeignKey(Unidad, null=True, blank=True, on_delete=models.CASCADE)
     cantidad = models.DecimalField(decimal_places=4, max_digits=10, null=True, blank=True)
 
     def __str__(self):
