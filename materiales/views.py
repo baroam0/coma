@@ -25,6 +25,7 @@ def buscar_materiales(request):
     page_number = request.GET.get('page', 1)
 
     if parametro:
+        parametro = parametro.upper()
         materiales = Material.objects.filter(
             descripcion__icontains=parametro
         ).order_by("descripcion")[:300]

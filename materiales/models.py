@@ -6,6 +6,11 @@ class Material(models.Model):
         max_length=500,unique=True, blank=False, null=False
         )
 
+    def save(self, *args, **kwargs):
+        if self.descripcion:
+            self.descripcion = self.descripcion.upper()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.descripcion
     
