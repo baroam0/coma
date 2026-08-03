@@ -49,12 +49,12 @@
 
             const url = `/remitos/reporte-materiales?desde=${desde}&hasta=${hasta}&destinatario=${destinatario}&destino=${destino}`;
 
+
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
                     const tbody = document.getElementById("tbody-reporte");
                     tbody.innerHTML = "";
-
                     data.results.forEach(item => {
                         const row = `
                             <tr>
@@ -63,11 +63,13 @@
                                 <td>${item.total}</td>
                                 <td>${item.destinatario || ""}</td>
                                 <td>${item.destino || ""}</td>
+                                <td>${item.textodestino || ""}</td>
                             </tr>
                         `;
                         tbody.innerHTML += row;
                     });
                 });
+            
         }
     </script>
 </head>
@@ -116,10 +118,11 @@
             <th>Total</th>
             <th>Destinatario</th>
             <th>Destino</th>
+            <th>Destino Texto </th>
         </tr>
     </thead>
     <tbody id="tbody-reporte">
-        <!-- Se llena dinámicamente -->
+        <!-- Se llena dinamicamente -->
     </tbody>
 </table>
 

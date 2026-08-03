@@ -6,7 +6,7 @@ from .models import Remito, DetalleRemito, Contratista, Documentacion
 from openpyxl import Workbook
 
 
-def reporte_materiales(request):
+def reporte_materialess(request):
     fecha_desde = request.GET.get("fecha_desde")
     fecha_hasta = request.GET.get("fecha_hasta")
     destino_id = request.GET.get("destino")
@@ -27,17 +27,31 @@ def reporte_materiales(request):
     if destinatario_id:
         filtros["remito__destinatario_id"] = destinatario_id
 
+    """
     resultados = (
         DetalleRemito.objects
         .filter(**filtros)
-        .values("material__descripcion")
+        .values("material__descripcion",  "remito__textodestino")
+        .annotate(total=Sum("cantidad"))
+        .order_by("material__descripcion")
+    )
+    """
+
+    resultados = (
+        DetalleRemito.objects
+        .filter(**filtros)
+        .values(
+            "material__descripcion",
+            "remito__textodestino",
+            "remito__fecha",
+            "remito__destinatario__descripcion",
+            "remito__destino__descripcion"
+        )
         .annotate(total=Sum("cantidad"))
         .order_by("material__descripcion")
     )
 
-    # -------------------------
-    # EXPORTACIÓN A EXCEL
-    # -------------------------
+    
     if export == "excel":
         wb = Workbook()
         ws = wb.active
@@ -58,14 +72,33 @@ def reporte_materiales(request):
         wb.save(response)
         return response
 
-    # Vista normal
+    data = []
+
+    for r in resultados:
+        data.append({
+            "fecha": r["remito__fecha"],
+            "material": r["material__descripcion"],
+            "total": float(r["total"]) if r["total"] else 0,
+            "destinatario": r["remito__destinatario__descripcion"],
+            "destino": r["remito__destino__descripcion"],
+            "remito__textodestino": r["remito__textodestino"],
+        })
+
     context = {
-        "resultados": resultados,
+        "resultados": data,
         "destinos": Documentacion.objects.all(),
         "destinatarios": Contratista.objects.all(),
     }
 
     return render(request, "reporte_materiales.html", context)
+
+
+
+
+
+
+
+
 
 
 # Create your views here.

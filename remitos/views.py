@@ -167,7 +167,7 @@ def reporte_materiales(request):
 
     qs = DetalleRemito.objects.select_related(
         "remito",
-        "material"       
+        "material"
     )
 
     if fecha_desde:
@@ -186,7 +186,8 @@ def reporte_materiales(request):
         "remito__fecha",
         "material__descripcion",
         "remito__destinatario__descripcion",
-        "remito__destino__descripcion"
+        "remito__destino__descripcion",
+        "remito__textodestino"
     ).annotate(
         total=Sum("cantidad")
     ).order_by("remito__fecha")
@@ -200,11 +201,11 @@ def reporte_materiales(request):
                 "total": float(r["total"]) if r["total"] else 0,
                 "destinatario": r["remito__destinatario__descripcion"],
                 "destino": r["remito__destino__descripcion"],
+                "textodestino": r["remito__textodestino"],
             })
 
         return JsonResponse({"results": data})
     else:
-
         return render(request, "reportes/reporte_materiales.html", {
             "destinatarios": Contratista.objects.all(),
             "destinos": Documentacion.objects.all(),

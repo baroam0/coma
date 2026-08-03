@@ -7,25 +7,20 @@ from materiales.models import Material, Unidad
 
 class Remito(models.Model):
     fecha=models.DateField()
-
     numerosop = models.IntegerField(null=True, blank=True)
-    
     destinatario = models.ForeignKey(
         Contratista, 
         on_delete=models.CASCADE, 
         null=True, 
         blank=True
     )
-
     textodestinatario = models.CharField(
         max_length=250, null=True, blank=True)
-
     destino=models.ForeignKey(
         Documentacion, on_delete=models.CASCADE, 
         null=True, 
         blank=True
     )
-
     textodestino=models.CharField(
         max_length=250, null=True, blank=True)
     
@@ -46,5 +41,5 @@ class DetalleRemito(models.Model):
         return str(self.pk)
 
     class Meta:
-        verbose_name_plural = "Detalles Remito"    
+        verbose_name_plural = "Detalles Remito"
 # Create your models here.
