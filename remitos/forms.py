@@ -13,6 +13,7 @@ class RemitoForm(forms.ModelForm):
         fields = [
             'fecha',
             'destinatario',
+            'numerosop',
             'textodestinatario',
             'destino',
             'textodestino',
@@ -23,6 +24,9 @@ class RemitoForm(forms.ModelForm):
                 attrs={'type': 'date', 'class': 'form-control'},
                 format='%Y-%m-%d'
             ),
+            'numerosop': forms.NumberInput(
+                        attrs={'class': 'form-control'}
+                        ),
             'destinatario': forms.Select(
                 attrs={'class': 'form-control'}
             ),

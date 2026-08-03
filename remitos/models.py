@@ -7,6 +7,8 @@ from materiales.models import Material, Unidad
 
 class Remito(models.Model):
     fecha=models.DateField()
+
+    numerosop = models.IntegerField(null=True, blank=True)
     
     destinatario = models.ForeignKey(
         Contratista, 
