@@ -60,7 +60,7 @@
                 <tr>
                     <td>{{ r.fecha }} - {{r.pk}} </td>
                     <td>{{ r.destino }} </td>
-                    <td>{{ r.destinatario.descripcion.upper | "" }} </td>
+                    <td>{{ r.destinatario.descripcion.upper }} </td>
                     <td>{{ r.destinatario.textodescripcion.upper }} </td>
                     <td>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/remitos/editar/{{ r.pk }}'">
