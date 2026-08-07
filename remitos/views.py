@@ -27,9 +27,8 @@ def buscar_remitos(request):
     parametro = request.GET.get('q', '')
 
     if parametro:
-
         resultados = Remito.objects.filter(
-            Q(destinatario__nombre__icontains=parametro) |
+            Q(destinatario__descripcion__icontains=parametro) |
             Q(textodestinatario__icontains=parametro) |
             Q(destino__descripcion__icontains=parametro) |
             Q(textodestino__icontains=parametro) |
@@ -39,13 +38,18 @@ def buscar_remitos(request):
         resultados = Remito.objects.order_by('-fecha')[:50]
 
     data = list()
-    tmpdict = dict()
 
     for r in resultados:
-        tmpdict = {
+        destino = r.destino.descripcion if r.destino else r.textodestino
+        destinatario = r.destinatario.descripcion if r.destinatario else r.textodestinatario
+
+        data.append({
             "id": r.pk,
-            "descripcion": r.descripcion
-        } 
+            "fecha": r.fecha,
+            "destino": destino,
+            "destinatario": destinatario,
+            "descripcion": " - ".join(filter(None, [destinatario, destino])),
+        })
 
     return JsonResponse({
         "results": data,

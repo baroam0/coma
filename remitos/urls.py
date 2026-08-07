@@ -8,6 +8,7 @@ from materiales.views import buscar_materiales
 urlpatterns = [
     path('lista/', views.listar_remitos, name='listar_remitos'),
     path('buscar/', views.buscar_remitos, name='buscar_remitos'),
+    path('buscarremitoajax', views.buscar_remitos, name='buscar_remitos'),
     path('crear/', views.crear_remito, name='crear_remito'),
     path('editar/<int:pk>', views.editar_remito, name='editar_remito'),
     path('ajaxdetalleremito/<int:pk>/', views.ajax_detalle_remito, name="ajax_detalle_remito"),

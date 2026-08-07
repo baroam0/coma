@@ -50,7 +50,6 @@
                 <tr>
                     <th>Remito </th>
                     <th>Expediente </th>
-                    <th>Destino </th>
                     <th>Responsable </th>
                     <th>Editar</th>
                 </tr>
@@ -60,7 +59,6 @@
                 <tr>
                     <td>{{ r.fecha }} - {{r.pk}} </td>
                     <td>{{ r.destino }} </td>
-                    <td>{{ r.destinatario.textodescripcion.upper }} </td>
                     <td>{{ r.destinatario.descripcion.upper }} </td>
                     <td>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/remitos/editar/{{ r.pk }}'">
@@ -82,12 +80,14 @@
 document.getElementById("txtBuscar").addEventListener("keyup", function() {
     const query = this.value.trim();
 
+    console.log(query);
+
     if (query.length < 3) {
         actualizarVista([]);
         return;
     }
 
-    fetch(`/materiales/buscar?q=${encodeURIComponent(query)}`)
+    fetch(`/remitos/buscarremitoajax?q=${encodeURIComponent(query)}`)
         .then(response => response.json())
         .then(data => actualizarVista(data));
 });
@@ -97,19 +97,23 @@ function actualizarVista(data) {
     let tbody = document.getElementById("tbodyMateriales");
     tbody.innerHTML = "";
 
-    data.results.forEach(p => {
+    const results = Array.isArray(data) ? data : (data.results || []);
+
+    results.forEach(p => {
         tbody.innerHTML += `
             <tr>
-                <td>${p.descripcion.toUpperCase()}</td>
+                <td>${p.fecha} - ${p.id}</td>
+                <td>${(p.destino || "").toUpperCase()}</td>
+                <td>${(p.destinatario || "").toUpperCase()}</td>
                 <td>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/materiales/editar/${p.id}'">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/remitos/editar/${p.id}'">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
                 </td>
             </tr>
         `;
     });
-    
+
 }
 
 
