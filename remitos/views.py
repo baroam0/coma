@@ -36,7 +36,7 @@ def buscar_remitos(request):
             Q(detalleremito__material__descripcion__icontains=parametro)
         ).distinct().order_by('-id')
     else:
-        resultados = Remito.objects.order_by('-id')[:30]
+        resultados = Remito.objects.order_by('-fecha')[:50]
 
     data = list()
     tmpdict = dict()
