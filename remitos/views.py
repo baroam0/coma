@@ -18,13 +18,19 @@ from materiales.models import Material, Unidad
 
 @login_required
 def listar_remitos(request):
-    resultados = Remito.objects.order_by('-id')[:30]
-    return render(request, 'remitos/lista_remitos.html', {'results': resultados})
+    pagina_num = request.GET.get('page', 1)
+    resultados = Remito.objects.order_by('-fecha')
+
+    paginator = Paginator(resultados, 10)
+    pagina = paginator.get_page(pagina_num)
+
+    return render(request, 'remitos/lista_remitos.html', {'results': pagina})
 
 
 @login_required
 def buscar_remitos(request):
     parametro = request.GET.get('q', '')
+    pagina_num = request.GET.get('page', 1)
 
     if parametro:
         resultados = Remito.objects.filter(
@@ -33,13 +39,16 @@ def buscar_remitos(request):
             Q(destino__descripcion__icontains=parametro) |
             Q(textodestino__icontains=parametro) |
             Q(detalleremito__material__descripcion__icontains=parametro)
-        ).distinct().order_by('-id')
+        ).distinct().order_by('-fecha')
     else:
-        resultados = Remito.objects.order_by('-fecha')[:50]
+        resultados = Remito.objects.order_by('-fecha')
+
+    paginator = Paginator(resultados, 10)
+    pagina = paginator.get_page(pagina_num)
 
     data = list()
 
-    for r in resultados:
+    for r in pagina:
         destino = r.destino.descripcion if r.destino else r.textodestino
         destinatario = r.destinatario.descripcion if r.destinatario else r.textodestinatario
 
@@ -47,12 +56,18 @@ def buscar_remitos(request):
             "id": r.pk,
             "fecha": r.fecha,
             "destino": destino,
+            "textodestino": r.textodestino,
             "destinatario": destinatario,
             "descripcion": " - ".join(filter(None, [destinatario, destino])),
         })
 
     return JsonResponse({
         "results": data,
+        "page": pagina.number,
+        "num_pages": paginator.num_pages,
+        "has_previous": pagina.has_previous(),
+        "has_next": pagina.has_next(),
+        "total": paginator.count,
     })
 
 

@@ -15,30 +15,43 @@ from .models import Material
 
 @login_required
 def listar_materiales(request):
-    resultados = Material.objects.none()
-    return render(request, 'materiales/lista_material.html', {'results': resultados})
+    pagina_num = request.GET.get('page', 1)
+    resultados = Material.objects.order_by('descripcion')
+
+    paginator = Paginator(resultados, 10)
+    pagina = paginator.get_page(pagina_num)
+
+    return render(request, 'materiales/lista_material.html', {'results': pagina})
 
 
 @login_required
 def buscar_materiales(request):
     parametro = request.GET.get('q', '')
-    page_number = request.GET.get('page', 1)
+    pagina_num = request.GET.get('page', 1)
 
     if parametro:
         parametro = parametro.upper()
         materiales = Material.objects.filter(
             descripcion__icontains=parametro
-        ).order_by("descripcion")[:300]
+        ).order_by("descripcion")
     else:
-        materiales = Material.objects.none()
+        materiales = Material.objects.order_by("descripcion")
+
+    paginator = Paginator(materiales, 10)
+    pagina = paginator.get_page(pagina_num)
 
     data = [{
         "id": p.pk,
         "text": p.descripcion
-    } for p in materiales]
+    } for p in pagina]
 
     return JsonResponse({
-        "results": data
+        "results": data,
+        "page": pagina.number,
+        "num_pages": paginator.num_pages,
+        "has_previous": pagina.has_previous(),
+        "has_next": pagina.has_next(),
+        "total": paginator.count,
     })
 
 
