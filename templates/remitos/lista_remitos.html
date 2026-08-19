@@ -59,9 +59,9 @@
                 {% for r in results %}
                 <tr>
                     <td>{{ r.fecha }}  </td>
-                    <td>{{ r.destino }} </td>
-                    <td>{{ r.textodestino.upper }} </td>
-                    <td>{{ r.destinatario.descripcion.upper }} </td>
+                    <td>{% if r.destino %}{{ r.destino.descripcion|default:""|upper }}{% else %}{{ r.textodestino|default:""|upper }}{% endif %} </td>
+                    <td>{{ r.textodestino|default:""|upper }} </td>
+                    <td>{% if r.destinatario %}{{ r.destinatario.descripcion|default:""|upper }}{% else %}{{ r.textodestinatario|default:""|upper }}{% endif %} </td>
                     <td>
                         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/remitos/editar/{{ r.pk }}'">
                             <i class="fas fa-pencil-alt"></i>
