@@ -202,12 +202,52 @@
                         q: params.term
                     };
                 },
-                processResults: function(data) {
-                    return {
-                        results: data.results
-                    };
+                processResults: function(data, params) {
+                    let results = data.results;
+                    let term = (params.term || "").trim();
+
+                    if (term) {
+                        let existe = results.some(function(r) {
+                            return r.text.toUpperCase() === term.toUpperCase();
+                        });
+
+                        if (!existe) {
+                            results = results.concat([{
+                                id: "new:" + term,
+                                text: 'Crear material "' + term + '"',
+                                esNuevo: true
+                            }]);
+                        }
+                    }
+
+                    return { results: results };
                 }
+            },
+            templateResult: function(data) {
+                if (data.esNuevo) {
+                    return $('<span><i class="fas fa-plus"></i> ' + data.text + '</span>');
+                }
+                return data.text;
             }
+        });
+
+        $('#detalle_material').on('select2:select', function(e) {
+            let data = e.params.data;
+            if (!data.esNuevo) return;
+
+            let descripcion = data.id.substring(4);
+
+            $.post("/materiales/crear-ajax/", {
+                descripcion: descripcion,
+                csrfmiddlewaretoken: $("input[name='csrfmiddlewaretoken']").val()
+            }, function(resp) {
+                let select = $('#detalle_material');
+                let option = new Option(resp.text, resp.id, true, true);
+                select.empty().append(option).trigger('change');
+            }).fail(function() {
+                alert("No se pudo crear el material.");
+                $('#detalle_material').val(null).trigger('change');
+            });
         });
     });
 

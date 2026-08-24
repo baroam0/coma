@@ -56,6 +56,20 @@ def buscar_materiales(request):
 
 
 @login_required
+def crear_material_ajax(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Método no permitido"}, status=405)
+
+    descripcion = request.POST.get("descripcion", "").strip()
+    if not descripcion:
+        return JsonResponse({"error": "La descripción es obligatoria"}, status=400)
+
+    material, _ = Material.objects.get_or_create(descripcion=descripcion.upper())
+
+    return JsonResponse({"id": material.id, "text": material.descripcion})
+
+
+@login_required
 def crear_material(request):
     if request.method == 'POST':
         form = MaterialForm(request.POST)
