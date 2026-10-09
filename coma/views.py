@@ -47,6 +47,12 @@ def salir(request):
     return redirect('/login')
 
 
+#@login_required(login_url='/login')
+def muestrajornal(request):
+    # Prototipo: los registros de horarios se manejan solo en memoria con JavaScript
+    return render(request, 'muestrajornal.html')
+
+
 @login_required(login_url='/login')
 def modal_data(request):
     hoy = timezone.localdate()

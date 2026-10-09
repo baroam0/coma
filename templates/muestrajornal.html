@@ -1,0 +1,540 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .empleado-card {
+        border-left: 0.3rem solid var(--color-empleado);
+    }
+
+    .empleado-card .nombre {
+        color: var(--color-empleado);
+        font-weight: 700;
+    }
+
+    .contador {
+        font-family: monospace;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .estado-badge {
+        font-size: 0.75rem;
+    }
+
+    .fc-event.en-curso {
+        background-image: repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.15),
+            rgba(255, 255, 255, 0.15) 8px,
+            transparent 8px,
+            transparent 16px
+        );
+    }
+
+    #calendarioJornal {
+        min-height: 650px;
+    }
+</style>
+
+
+<div class="container-fluid">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-2">
+        <h4 class="h4 text-gray-800">Registro de Jornales</h4>
+        <span class="badge badge-warning">
+            Prototipo: los datos se guardan solo en memoria y se pierden al recargar la página
+        </span>
+    </div>
+
+    <!-- Tarjetas de empleados con contador -->
+    <div class="row mt-3" id="tarjetasEmpleados"></div>
+
+    <!-- Calendario -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-2 d-flex flex-wrap align-items-center justify-content-between">
+            <div class="small text-muted">
+                <i class="fas fa-info-circle"></i>
+                Seleccione un rango horario en el calendario para cargar un jornal, o haga clic sobre uno para editarlo.
+            </div>
+            <div id="filtrosEmpleados" class="small"></div>
+        </div>
+        <div class="card-body">
+            <div id="calendarioJornal"></div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal registro de jornal -->
+<div class="modal fade" id="modalJornal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalJornalTitulo">Registrar jornal</h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="jornalId">
+
+                <div class="form-group">
+                    <label for="jornalEmpleado">Empleado</label>
+                    <select class="form-control" id="jornalEmpleado"></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="jornalFecha">Fecha</label>
+                    <input type="date" class="form-control" id="jornalFecha">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-6">
+                        <label for="jornalIngreso">Hora de ingreso</label>
+                        <input type="time" class="form-control" id="jornalIngreso">
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="jornalEgreso">Hora de egreso</label>
+                        <input type="time" class="form-control" id="jornalEgreso">
+                        <small class="form-text text-muted">Vacío = jornal en curso</small>
+                    </div>
+                </div>
+
+                <div class="alert alert-info py-2 mb-0">
+                    Horas trabajadas: <strong id="jornalDuracion">-</strong>
+                </div>
+
+                <div class="alert alert-danger py-2 mt-2 mb-0 d-none" id="jornalError"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger mr-auto d-none" id="btnEliminarJornal">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarJornal">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ------------------------------------------------------------------
+    // Datos temporales (solo en memoria)
+    // ------------------------------------------------------------------
+    const empleados = [
+        { id: 1, nombre: 'Juan Perez', color: '#4e73df' },
+        { id: 2, nombre: 'Juana Arce', color: '#1cc88a' },
+    ];
+
+    // Cada registro: { id, empleadoId, inicio: Date, fin: Date | null }
+    // fin = null significa que el empleado está trabajando (jornal en curso)
+    let registros = [];
+    let proximoId = 1;
+    const empleadosVisibles = new Set(empleados.map(e => e.id));
+
+    const esLocale = {
+        code: 'es',
+        week: { dow: 1, doy: 4 },
+        buttonText: {
+            prev: 'Ant', next: 'Sig', today: 'Hoy',
+            month: 'Mes', week: 'Semana', day: 'Día', list: 'Lista'
+        },
+        allDayText: 'Todo el día',
+        moreLinkText: 'más',
+        noEventsText: 'No hay jornales para mostrar'
+    };
+
+
+    // ------------------------------------------------------------------
+    // Utilidades
+    // ------------------------------------------------------------------
+    function getEmpleado(id) {
+        return empleados.find(e => e.id === Number(id));
+    }
+
+    function registroAbierto(empleadoId) {
+        return registros.find(r => r.empleadoId === empleadoId && r.fin === null);
+    }
+
+    function duracionMs(registro, desde, hasta) {
+        // Duración del registro, opcionalmente recortada al rango [desde, hasta)
+        let inicio = registro.inicio;
+        let fin = registro.fin || new Date();
+        if (desde && inicio < desde) inicio = desde;
+        if (hasta && fin > hasta) fin = hasta;
+        return Math.max(0, fin - inicio);
+    }
+
+    function totalMs(empleadoId, desde, hasta) {
+        return registros
+            .filter(r => r.empleadoId === empleadoId)
+            .reduce((acc, r) => acc + duracionMs(r, desde, hasta), 0);
+    }
+
+    function formatoReloj(ms) {
+        const seg = Math.floor(ms / 1000);
+        const h = String(Math.floor(seg / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seg % 3600) / 60)).padStart(2, '0');
+        const s = String(seg % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    }
+
+    function formatoHoras(ms) {
+        const min = Math.floor(ms / 60000);
+        return `${Math.floor(min / 60)} h ${String(min % 60).padStart(2, '0')} m`;
+    }
+
+    function formatoHora(fecha) {
+        return fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    function pad(n) {
+        return String(n).padStart(2, '0');
+    }
+
+    function aInputFecha(fecha) {
+        return `${fecha.getFullYear()}-${pad(fecha.getMonth() + 1)}-${pad(fecha.getDate())}`;
+    }
+
+    function aInputHora(fecha) {
+        return `${pad(fecha.getHours())}:${pad(fecha.getMinutes())}`;
+    }
+
+    function desdeInputs(fecha, hora) {
+        const [a, m, d] = fecha.split('-').map(Number);
+        const [hh, mm] = hora.split(':').map(Number);
+        return new Date(a, m - 1, d, hh, mm);
+    }
+
+    function inicioDelDia(fecha) {
+        const d = new Date(fecha);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }
+
+    function haySolapamiento(empleadoId, inicio, fin, excluirId) {
+        const finNuevo = fin || new Date(8640000000000000);
+        return registros.some(r => {
+            if (r.empleadoId !== empleadoId || r.id === excluirId) return false;
+            const finExistente = r.fin || new Date(8640000000000000);
+            return inicio < finExistente && r.inicio < finNuevo;
+        });
+    }
+
+
+    // ------------------------------------------------------------------
+    // Tarjetas de empleados y filtros
+    // ------------------------------------------------------------------
+    const contenedorTarjetas = document.getElementById('tarjetasEmpleados');
+    const contenedorFiltros = document.getElementById('filtrosEmpleados');
+
+    empleados.forEach(emp => {
+        contenedorTarjetas.insertAdjacentHTML('beforeend', `
+            <div class="col-md-6 mb-3">
+                <div class="card shadow h-100 empleado-card" style="--color-empleado: ${emp.color}">
+                    <div class="card-body py-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="nombre"><i class="fas fa-user"></i> ${emp.nombre}</div>
+                                <span class="badge estado-badge" id="estado-${emp.id}"></span>
+                                <div class="small text-muted mt-1" id="ingreso-${emp.id}"></div>
+                            </div>
+                            <div class="text-right">
+                                <div class="small text-muted">Jornal en curso</div>
+                                <div class="contador text-gray-800" id="contador-${emp.id}">00:00:00</div>
+                            </div>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="small">
+                                Hoy: <strong id="hoy-${emp.id}">0 h 00 m</strong>
+                                &nbsp;|&nbsp;
+                                Período visible: <strong id="periodo-${emp.id}">0 h 00 m</strong>
+                            </div>
+                            <div class="mt-2 mt-sm-0">
+                                <button class="btn btn-success btn-sm" id="btnIngreso-${emp.id}">
+                                    <i class="fas fa-sign-in-alt"></i> Registrar ingreso
+                                </button>
+                                <button class="btn btn-danger btn-sm" id="btnEgreso-${emp.id}">
+                                    <i class="fas fa-sign-out-alt"></i> Registrar egreso
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        contenedorFiltros.insertAdjacentHTML('beforeend', `
+            <div class="custom-control custom-checkbox custom-control-inline">
+                <input type="checkbox" class="custom-control-input" id="filtro-${emp.id}" checked>
+                <label class="custom-control-label" for="filtro-${emp.id}" style="color: ${emp.color}; font-weight: 600;">
+                    ${emp.nombre}
+                </label>
+            </div>
+        `);
+
+        document.getElementById(`btnIngreso-${emp.id}`).addEventListener('click', () => registrarIngreso(emp.id));
+        document.getElementById(`btnEgreso-${emp.id}`).addEventListener('click', () => registrarEgreso(emp.id));
+        document.getElementById(`filtro-${emp.id}`).addEventListener('change', function () {
+            if (this.checked) empleadosVisibles.add(emp.id);
+            else empleadosVisibles.delete(emp.id);
+            refrescarCalendario();
+        });
+    });
+
+    function actualizarTarjetas() {
+        const ahora = new Date();
+        const hoyDesde = inicioDelDia(ahora);
+        const hoyHasta = new Date(hoyDesde.getTime() + 24 * 3600 * 1000);
+        const vista = calendario.view;
+
+        empleados.forEach(emp => {
+            const abierto = registroAbierto(emp.id);
+            const estado = document.getElementById(`estado-${emp.id}`);
+
+            if (abierto) {
+                estado.className = 'badge estado-badge badge-success';
+                estado.textContent = 'Trabajando';
+                document.getElementById(`ingreso-${emp.id}`).textContent =
+                    `Ingresó: ${abierto.inicio.toLocaleDateString('es-AR')} ${formatoHora(abierto.inicio)}`;
+                document.getElementById(`contador-${emp.id}`).textContent = formatoReloj(duracionMs(abierto));
+            } else {
+                estado.className = 'badge estado-badge badge-secondary';
+                estado.textContent = 'Fuera de turno';
+                document.getElementById(`ingreso-${emp.id}`).textContent = '';
+                document.getElementById(`contador-${emp.id}`).textContent = '00:00:00';
+            }
+
+            document.getElementById(`btnIngreso-${emp.id}`).disabled = !!abierto;
+            document.getElementById(`btnEgreso-${emp.id}`).disabled = !abierto;
+            document.getElementById(`hoy-${emp.id}`).textContent = formatoHoras(totalMs(emp.id, hoyDesde, hoyHasta));
+            document.getElementById(`periodo-${emp.id}`).textContent =
+                formatoHoras(totalMs(emp.id, vista.activeStart, vista.activeEnd));
+        });
+    }
+
+
+    // ------------------------------------------------------------------
+    // Fichaje rápido (ingreso / egreso con la hora actual)
+    // ------------------------------------------------------------------
+    function registrarIngreso(empleadoId) {
+        const ahora = new Date();
+        ahora.setSeconds(0, 0);
+        if (haySolapamiento(empleadoId, ahora, null)) {
+            alert('El empleado ya tiene un jornal cargado que se superpone con este horario.');
+            return;
+        }
+        registros.push({ id: proximoId++, empleadoId, inicio: ahora, fin: null });
+        refrescarCalendario();
+    }
+
+    function registrarEgreso(empleadoId) {
+        const abierto = registroAbierto(empleadoId);
+        if (!abierto) return;
+        abierto.fin = new Date();
+        refrescarCalendario();
+    }
+
+
+    // ------------------------------------------------------------------
+    // Calendario
+    // ------------------------------------------------------------------
+    function construirEventos() {
+        return registros
+            .filter(r => empleadosVisibles.has(r.empleadoId))
+            .map(r => {
+                const emp = getEmpleado(r.empleadoId);
+                const fin = r.fin || new Date(Math.max(Date.now(), r.inicio.getTime() + 60000));
+                return {
+                    id: String(r.id),
+                    title: `${emp.nombre} · ${formatoHoras(duracionMs(r))}${r.fin ? '' : ' (en curso)'}`,
+                    start: r.inicio,
+                    end: fin,
+                    backgroundColor: emp.color,
+                    borderColor: emp.color,
+                    classNames: r.fin ? [] : ['en-curso'],
+                    durationEditable: !!r.fin,
+                };
+            });
+    }
+
+    function refrescarCalendario() {
+        calendario.removeAllEvents();
+        calendario.addEventSource(construirEventos());
+        actualizarTarjetas();
+    }
+
+    function moverRegistro(info) {
+        const registro = registros.find(r => r.id === Number(info.event.id));
+        const inicio = info.event.start;
+        const fin = registro.fin ? info.event.end : null;
+
+        if ((!fin && inicio > new Date()) || haySolapamiento(registro.empleadoId, inicio, fin, registro.id)) {
+            info.revert();
+            alert('No se puede mover el jornal: se superpone con otro registro o un jornal en curso quedaría en el futuro.');
+            return;
+        }
+        registro.inicio = inicio;
+        registro.fin = fin;
+        refrescarCalendario();
+    }
+
+    const calendario = new FullCalendar.Calendar(document.getElementById('calendarioJornal'), {
+        locales: [esLocale],
+        locale: 'es',
+        initialView: 'timeGridWeek',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        allDaySlot: false,
+        nowIndicator: true,
+        selectable: true,
+        selectMirror: true,
+        editable: true,
+        scrollTime: '07:00:00',
+        slotDuration: '00:30:00',
+        slotLabelFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+        height: 'auto',
+        events: [],
+
+        select: function (info) {
+            calendario.unselect();
+            let inicio = info.start;
+            let fin = info.end;
+            // En la vista mensual se selecciona el día completo: se propone un horario por defecto
+            if (info.view.type === 'dayGridMonth') {
+                inicio = new Date(info.start); inicio.setHours(8, 0, 0, 0);
+                fin = new Date(info.start); fin.setHours(16, 0, 0, 0);
+            }
+            abrirModal({ inicio, fin });
+        },
+
+        eventClick: function (info) {
+            const registro = registros.find(r => r.id === Number(info.event.id));
+            abrirModal(registro);
+        },
+
+        eventDrop: moverRegistro,
+        eventResize: moverRegistro,
+
+        datesSet: actualizarTarjetas,
+    });
+
+    calendario.render();
+
+
+    // ------------------------------------------------------------------
+    // Modal de alta / edición
+    // ------------------------------------------------------------------
+    const $modal = $('#modalJornal');
+    const selEmpleado = document.getElementById('jornalEmpleado');
+    const inpId = document.getElementById('jornalId');
+    const inpFecha = document.getElementById('jornalFecha');
+    const inpIngreso = document.getElementById('jornalIngreso');
+    const inpEgreso = document.getElementById('jornalEgreso');
+    const divError = document.getElementById('jornalError');
+    const spanDuracion = document.getElementById('jornalDuracion');
+    const btnEliminar = document.getElementById('btnEliminarJornal');
+
+    empleados.forEach(emp => {
+        selEmpleado.insertAdjacentHTML('beforeend', `<option value="${emp.id}">${emp.nombre}</option>`);
+    });
+
+    function abrirModal(registro) {
+        const esEdicion = !!registro.id;
+        document.getElementById('modalJornalTitulo').textContent = esEdicion ? 'Editar jornal' : 'Registrar jornal';
+        inpId.value = registro.id || '';
+        selEmpleado.value = registro.empleadoId || empleados[0].id;
+        inpFecha.value = aInputFecha(registro.inicio);
+        inpIngreso.value = aInputHora(registro.inicio);
+        inpEgreso.value = registro.fin ? aInputHora(registro.fin) : '';
+        btnEliminar.classList.toggle('d-none', !esEdicion);
+        divError.classList.add('d-none');
+        actualizarDuracionModal();
+        $modal.modal('show');
+    }
+
+    function leerModal() {
+        if (!inpFecha.value || !inpIngreso.value) {
+            return { error: 'Debe indicar la fecha y la hora de ingreso.' };
+        }
+        const inicio = desdeInputs(inpFecha.value, inpIngreso.value);
+        let fin = null;
+        if (inpEgreso.value) {
+            fin = desdeInputs(inpFecha.value, inpEgreso.value);
+            // Si el egreso es menor al ingreso se asume que el turno terminó al día siguiente
+            if (fin <= inicio) fin = new Date(fin.getTime() + 24 * 3600 * 1000);
+        } else if (inicio > new Date()) {
+            return { error: 'Un jornal en curso no puede tener ingreso en el futuro. Indique la hora de egreso.' };
+        }
+        return { inicio, fin };
+    }
+
+    function actualizarDuracionModal() {
+        const datos = leerModal();
+        spanDuracion.textContent = datos.error ? '-' :
+            formatoHoras(duracionMs(datos)) + (datos.fin ? '' : ' (en curso)');
+    }
+
+    [inpFecha, inpIngreso, inpEgreso].forEach(el => el.addEventListener('input', actualizarDuracionModal));
+
+    document.getElementById('btnGuardarJornal').addEventListener('click', function () {
+        const datos = leerModal();
+        const empleadoId = Number(selEmpleado.value);
+        const id = inpId.value ? Number(inpId.value) : null;
+
+        let error = datos.error;
+        if (!error && haySolapamiento(empleadoId, datos.inicio, datos.fin, id)) {
+            error = `${getEmpleado(empleadoId).nombre} ya tiene un jornal que se superpone con ese horario.`;
+        }
+        if (error) {
+            divError.textContent = error;
+            divError.classList.remove('d-none');
+            return;
+        }
+
+        if (id) {
+            Object.assign(registros.find(r => r.id === id), { empleadoId, inicio: datos.inicio, fin: datos.fin });
+        } else {
+            registros.push({ id: proximoId++, empleadoId, inicio: datos.inicio, fin: datos.fin });
+        }
+        $modal.modal('hide');
+        refrescarCalendario();
+    });
+
+    btnEliminar.addEventListener('click', function () {
+        if (!confirm('¿Eliminar este jornal?')) return;
+        const id = Number(inpId.value);
+        registros = registros.filter(r => r.id !== id);
+        $modal.modal('hide');
+        refrescarCalendario();
+    });
+
+
+    // ------------------------------------------------------------------
+    // Contadores en vivo
+    // ------------------------------------------------------------------
+    actualizarTarjetas();
+    setInterval(actualizarTarjetas, 1000);
+    // Los jornales en curso se estiran en el calendario cada minuto
+    setInterval(function () {
+        if (registros.some(r => r.fin === null)) refrescarCalendario();
+    }, 60000);
+});
+</script>
+{% endblock %}

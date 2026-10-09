@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.shortcuts import redirect
 
-from .views import home, loginusuario, salir
+from .views import home, loginusuario, muestrajornal, salir
 
 
 urlpatterns = [
@@ -31,6 +31,7 @@ urlpatterns = [
     path('contratistas/', include('contratistas.urls')),
     path('materiales/', include('materiales.urls')),
     path('remitos/', include('remitos.urls')),
+    path('muestrajornal/', muestrajornal, name="muestrajornal"),
     path('salir/', salir, name="salir"),   
 ]
 
