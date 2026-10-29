@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h4 class="h4 text-gray-800">Listado de Certificados </h4>
+    </div>
+
+    <!-- Mensajes -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+                {{message}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form action="/certificados/lista/" method="GET" class="mb-3">
+        <div class="input-group">
+            <input class="form-control" id="txtBuscar" name="txtBuscar" placeholder="Buscar certificado...">
+            <div class="input-group-append">
+                <button type="button" class="btn btn-primary" title="Nuevo Certificado" onclick="location.href='/certificados/crear/'">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla responsiva -->
+    <div class="table-responsive">
+        <table class="table table-hover table-sm" id="tablaCertificados">
+            <thead class="thead-light">
+                <tr>
+                    <th>Fecha </th>
+                    <th>Numero </th>
+                    <th>Descripcion </th>
+                    <th>Monto </th>
+                    <th>Expediente Madre </th>
+                    <th>Editar</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyCertificados">
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+
+document.getElementById("txtBuscar").addEventListener("keyup", function() {
+    const query = this.value.trim();
+
+    if (query.length < 3) {
+        actualizarVista({results: []});
+        return;
+    }
+
+    fetch(`/certificados/buscar?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => actualizarVista(data));
+});
+
+
+function actualizarVista(data) {
+    let tbody = document.getElementById("tbodyCertificados");
+    tbody.innerHTML = "";
+
+    data.results.forEach(e => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${e.fecha}</td>
+                <td>${e.numero}</td>
+                <td>${e.descripcion}</td>
+                <td>${e.monto}</td>
+                <td>${e.expediente_madre}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='/certificados/editar/${e.id}'">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+</script>
+{% endblock %}

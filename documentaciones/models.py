@@ -16,7 +16,7 @@ class Documentacion(models.Model):
     TIPO_CHOICES = (
         ('V', 'Varios'),
         ('M', 'Materiales'),
-        ('C', 'Certificado'),
+        #('C', 'Certificado'),
         ('A', 'Contrato o Alquiler'),
         ('P', 'Pago Servicios'),
     )

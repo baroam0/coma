@@ -28,6 +28,7 @@ urlpatterns = [
     path('', home, name="home"),
     path('login/', loginusuario, name="login"),
     path('documentaciones/', include('documentaciones.urls')),
+    path('certificados/', include('certificados.urls')),
     path('contratistas/', include('contratistas.urls')),
     path('materiales/', include('materiales.urls')),
     path('remitos/', include('remitos.urls')),
