@@ -20,13 +20,14 @@ from django.contrib import admin
 from django.urls import include, path
 from django.shortcuts import redirect
 
-from .views import home, loginusuario, muestrajornal, salir
+from .views import api_login, home, loginusuario, muestrajornal, salir
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name="home"),
     path('login/', loginusuario, name="login"),
+    path('api/login/', api_login, name="api-login"),
     path('documentaciones/', include('documentaciones.urls')),
     path('certificados/', include('certificados.urls')),
     path('contratistas/', include('contratistas.urls')),
