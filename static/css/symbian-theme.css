@@ -1,0 +1,280 @@
+/*
+ * Tema "Symbian" (inspirado en la paleta clásica de Nokia S60)
+ * Se carga DESPUÉS de sb-admin-2.min.css y sobrescribe sus colores.
+ *
+ * Paleta:
+ *   - Azul S60 profundo para barras de título / sidebar
+ *   - Brillo "glossy" en barras y botones
+ *   - Fondo de contenido gris-azulado claro
+ *   - Resaltado de foco/selección naranja-ámbar
+ *   - Barra de softkeys inferior negra
+ */
+
+:root {
+    --sym-navy: #06265e;
+    --sym-blue-dark: #0b3a8c;
+    --sym-blue: #1659c7;
+    --sym-blue-light: #4a8ef0;
+    --sym-sky: #cfe0f8;
+    --sym-bg: #e8eef7;
+    --sym-panel: #ffffff;
+    --sym-border: #9db6dc;
+    --sym-orange: #f39a1e;
+    --sym-orange-dark: #d97c00;
+    --sym-green: #3fa535;
+    --sym-red: #d6262c;
+    --sym-text: #10203d;
+    --sym-softkey: #0a0a0a;
+
+    /* Variables de Bootstrap/SB Admin */
+    --primary: var(--sym-blue);
+    --info: #1aa3d9;
+    --success: var(--sym-green);
+    --warning: var(--sym-orange);
+    --danger: var(--sym-red);
+}
+
+/* ---------- Base ---------- */
+body,
+#content-wrapper {
+    background-color: var(--sym-bg) !important;
+    color: var(--sym-text);
+    font-family: "Nokia Sans", "Nokia Pure Text", Tahoma, Verdana, "Nunito", sans-serif;
+}
+
+a { color: var(--sym-blue); }
+a:hover { color: var(--sym-blue-dark); }
+
+.text-gray-800,
+.text-gray-900 { color: var(--sym-text) !important; }
+.text-primary { color: var(--sym-blue) !important; }
+.text-warning,
+.texto-amarillo { color: var(--sym-orange) !important; }
+
+/* Títulos de página con estilo "barra de título" S60 */
+#content .container-fluid > .container-fluid > .text-center > h4,
+#content .container-fluid > .text-center > h4 {
+    display: inline-block;
+    padding: .35rem 1.25rem;
+    color: #fff !important;
+    border-radius: .4rem;
+    background: linear-gradient(to bottom, var(--sym-blue-light) 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+    box-shadow: 0 2px 4px rgba(6, 38, 94, .35);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .4);
+}
+
+/* ---------- Fondos / gradientes ---------- */
+.bg-primary { background-color: var(--sym-blue) !important; }
+
+.bg-gradient-primary {
+    background-color: var(--sym-navy) !important;
+    background-image: linear-gradient(180deg, var(--sym-blue) 0%, var(--sym-blue-dark) 45%, var(--sym-navy) 100%) !important;
+}
+
+/* ---------- Sidebar (menú tipo lista S60) ---------- */
+.sidebar .sidebar-brand {
+    background: linear-gradient(to bottom, #6aa6ff 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+    border-bottom: 2px solid var(--sym-orange);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+}
+
+.sidebar-dark .nav-item .nav-link {
+    color: #e6efff;
+    margin: 2px 6px;
+    border-radius: .35rem;
+    border: 1px solid transparent;
+}
+
+.sidebar-dark .nav-item .nav-link i { color: #9fc3ff; }
+
+/* Elemento resaltado: el clásico "focus" naranja de Symbian */
+.sidebar-dark .nav-item .nav-link:hover,
+.sidebar-dark .nav-item.active .nav-link {
+    color: #1a1000;
+    background: linear-gradient(to bottom, #ffd27a 0%, var(--sym-orange) 50%, var(--sym-orange-dark) 100%);
+    border-color: #a85f00;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+
+.sidebar-dark .nav-item .nav-link:hover i,
+.sidebar-dark .nav-item.active .nav-link i { color: #1a1000; }
+
+.sidebar-dark hr.sidebar-divider { border-top-color: rgba(159, 195, 255, .35); }
+
+.sidebar-dark #sidebarToggle { background-color: rgba(255, 255, 255, .2); }
+.sidebar-dark #sidebarToggle:hover { background-color: var(--sym-orange); }
+
+/* ---------- Topbar (barra de estado) ---------- */
+.topbar.bg-white,
+.topbar {
+    background: linear-gradient(to bottom, #f7faff 0%, var(--sym-sky) 100%) !important;
+    border-bottom: 3px solid var(--sym-blue);
+}
+
+/* ---------- Footer (barra de softkeys) ---------- */
+footer.sticky-footer,
+footer.sticky-footer.bg-white {
+    background: linear-gradient(to bottom, #3a3a3a 0%, var(--sym-softkey) 60%) !important;
+    color: #fff;
+    border-top: 2px solid var(--sym-blue);
+}
+
+/* ---------- Cards / paneles ---------- */
+.card {
+    border: 1px solid var(--sym-border);
+    border-radius: .5rem;
+    background-color: var(--sym-panel);
+}
+
+.card-header {
+    color: #fff;
+    background: linear-gradient(to bottom, var(--sym-blue-light) 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+    border-bottom: 2px solid var(--sym-orange);
+}
+
+.card-header .text-primary,
+.card-header .text-muted,
+.card-header h6,
+.card-header .small { color: #fff !important; }
+
+.border-left-primary { border-left-color: var(--sym-blue) !important; }
+.border-left-warning { border-left-color: var(--sym-orange) !important; }
+.border-left-danger { border-left-color: var(--sym-red) !important; }
+.border-left-success { border-left-color: var(--sym-green) !important; }
+
+/* ---------- Botones "glossy" ---------- */
+.btn-primary {
+    color: #fff;
+    border-color: var(--sym-navy);
+    background: linear-gradient(to bottom, var(--sym-blue-light) 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .35);
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:not(:disabled):not(.disabled):active {
+    color: #1a1000;
+    border-color: #a85f00;
+    background: linear-gradient(to bottom, #ffd27a 0%, var(--sym-orange) 50%, var(--sym-orange-dark) 100%);
+    text-shadow: none;
+    box-shadow: 0 0 0 .2rem rgba(243, 154, 30, .35);
+}
+
+.btn-secondary {
+    color: var(--sym-text);
+    border-color: #8a9bb8;
+    background: linear-gradient(to bottom, #ffffff 0%, #dde6f3 50%, #c4d2e8 51%, #b3c4e0 100%);
+}
+.btn-secondary:hover { color: var(--sym-text); background: #c4d2e8; border-color: var(--sym-blue); }
+
+.btn-success {
+    border-color: #276b20;
+    background: linear-gradient(to bottom, #7fd46f 0%, var(--sym-green) 50%, #2e8a26 51%, #23701d 100%);
+}
+.btn-danger {
+    border-color: #8f1418;
+    background: linear-gradient(to bottom, #ff7a7e 0%, var(--sym-red) 50%, #b51d22 51%, #8f1418 100%);
+}
+.btn-info {
+    color: #fff;
+    border-color: #0f6f96;
+    background: linear-gradient(to bottom, #7fd3f5 0%, #1aa3d9 50%, #1489b8 51%, #0f6f96 100%);
+}
+.btn-warning {
+    color: #1a1000;
+    border-color: #a85f00;
+    background: linear-gradient(to bottom, #ffd27a 0%, var(--sym-orange) 50%, var(--sym-orange-dark) 100%);
+}
+
+.btn-outline-primary { color: var(--sym-blue); border-color: var(--sym-blue); }
+.btn-outline-primary:hover { color: #fff; background-color: var(--sym-blue); border-color: var(--sym-blue); }
+.btn-outline-secondary { color: var(--sym-blue-dark); border-color: var(--sym-border); }
+.btn-outline-secondary:hover { color: #1a1000; background-color: var(--sym-orange); border-color: var(--sym-orange-dark); }
+.btn-outline-success { color: var(--sym-green); border-color: var(--sym-green); }
+.btn-outline-success:hover { color: #fff; background-color: var(--sym-green); border-color: var(--sym-green); }
+
+/* ---------- Formularios ---------- */
+.form-control,
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    border: 1px solid var(--sym-border);
+    background-color: #fff;
+}
+.form-control:focus {
+    border-color: var(--sym-orange);
+    box-shadow: 0 0 0 .2rem rgba(243, 154, 30, .3);
+}
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: var(--sym-orange);
+    color: #1a1000;
+}
+
+/* ---------- Tablas (listas S60) ---------- */
+.table thead th,
+.table .thead-light th {
+    color: #fff;
+    background: linear-gradient(to bottom, var(--sym-blue-light) 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+    border-color: var(--sym-navy);
+}
+
+.table {
+    background-color: var(--sym-panel);
+    color: var(--sym-text);
+}
+.table td { border-color: #d3dfef; }
+.table tbody tr:nth-of-type(even) { background-color: #f2f6fc; }
+
+.table-hover tbody tr:hover {
+    color: #1a1000;
+    background: linear-gradient(to bottom, #ffe2ad 0%, #ffc566 100%) !important;
+}
+
+/* ---------- Badges / alertas ---------- */
+.badge-primary { background-color: var(--sym-blue); }
+.badge-warning { background-color: var(--sym-orange); color: #1a1000; }
+.badge-success { background-color: var(--sym-green); }
+.badge-danger { background-color: var(--sym-red); }
+
+.alert-info,
+.alert-primary {
+    color: var(--sym-navy);
+    background-color: var(--sym-sky);
+    border-color: var(--sym-border);
+}
+
+/* ---------- Modales ---------- */
+.modal-content { border: 2px solid var(--sym-blue-dark); border-radius: .5rem; }
+.modal-header {
+    color: #fff;
+    background: linear-gradient(to bottom, var(--sym-blue-light) 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+}
+.modal-header .close { color: #fff; text-shadow: none; opacity: .9; }
+.modal-footer { background-color: var(--sym-bg); }
+
+/* ---------- Paginación / scroll ---------- */
+.page-item.active .page-link { background-color: var(--sym-blue); border-color: var(--sym-blue); }
+.page-link { color: var(--sym-blue); }
+.page-link:hover { color: #1a1000; background-color: var(--sym-orange); }
+
+.scroll-to-top { background: var(--sym-blue-dark); }
+.scroll-to-top:hover { background: var(--sym-orange); }
+
+/* ---------- FullCalendar ---------- */
+.fc .fc-button-primary {
+    border-color: var(--sym-navy);
+    background: linear-gradient(to bottom, var(--sym-blue-light) 0%, var(--sym-blue) 50%, var(--sym-blue-dark) 51%, var(--sym-navy) 100%);
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):hover {
+    color: #1a1000;
+    border-color: #a85f00;
+    background: linear-gradient(to bottom, #ffd27a 0%, var(--sym-orange) 50%, var(--sym-orange-dark) 100%);
+}
+.fc .fc-day-today { background-color: rgba(243, 154, 30, .15) !important; }
+
+/* ---------- Login ---------- */
+body.bg-gradient-primary .card {
+    border: 2px solid var(--sym-blue-dark);
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .45) !important;
+}
+body.bg-gradient-primary .card h1 { color: var(--sym-navy) !important; }

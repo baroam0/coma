@@ -1,130 +1,181 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte de Materiales</title>
+{% extends 'base.html' %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+{% block content %}
 
-        h2 {
-            margin-bottom: 20px;
-        }
+<style>
+    #tablaReporte td.total {
+        text-align: right;
+        font-weight: 700;
+        font-family: monospace;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
+    .titulo-impresion {
+        display: none;
+    }
 
-        table, th, td {
-            border: 1px solid #444;
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
-
+    @media print {
+        /* Solo se imprime el reporte: se ocultan menú, barras y filtros */
+        #accordionSidebar,
+        .topbar,
+        footer.sticky-footer,
+        .scroll-to-top,
         .no-print {
-            margin-bottom: 20px;
+            display: none !important;
         }
 
-        @media print {
-            .no-print {
-                display: none;
-            }
+        body,
+        #content-wrapper {
+            background: #fff !important;
         }
-    </style>
 
-    <script>
-        function cargarReporte() {
-            const desde = document.getElementById("desde").value;
-            const hasta = document.getElementById("hasta").value;
-            const destinatario = document.getElementById("destinatario").value;
-            const destino = document.getElementById("destino").value;
-
-            const url = `/remitos/reporte-materiales?desde=${desde}&hasta=${hasta}&destinatario=${destinatario}&destino=${destino}`;
-
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    const tbody = document.getElementById("tbody-reporte");
-                    tbody.innerHTML = "";
-                    data.results.forEach(item => {
-                        const row = `
-                            <tr>
-                                <td>${item.fecha}</td>
-                                <td>${item.material}</td>
-                                <td>${item.total}</td>
-                                <td>${item.destinatario || ""}</td>
-                                <td>${item.destino || ""}</td>
-                                <td>${item.textodestino || ""}</td>
-                            </tr>
-                        `;
-                        tbody.innerHTML += row;
-                    });
-                });
-            
+        .titulo-impresion {
+            display: block;
         }
-    </script>
-</head>
 
-<body>
+        /* Mantiene los colores del encabezado de la tabla al imprimir */
+        #tablaReporte thead th {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    }
+</style>
 
-<h2>Reporte de Materiales</h2>
+<div class="container-fluid">
 
-<div class="no-print">
-    <form onsubmit="event.preventDefault(); cargarReporte();">
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+        <h4 class="h4 text-gray-800">Reporte de Materiales</h4>
+    </div>
 
-        <label>Desde:</label>
-        <input type="date" id="desde">
+    <h5 class="titulo-impresion mb-3" id="resumenFiltros"></h5>
 
-        <label>Hasta:</label>
-        <input type="date" id="hasta">
+    <!-- Filtros -->
+    <div class="card shadow mb-4 no-print">
+        <div class="card-header py-2">
+            <h6 class="m-0 font-weight-bold"><i class="fas fa-filter mr-1"></i> Filtros</h6>
+        </div>
+        <div class="card-body">
+            <form id="formReporte" onsubmit="event.preventDefault(); cargarReporte();">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label for="desde">Desde</label>
+                        <input type="date" id="desde" class="form-control form-control-sm">
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label for="hasta">Hasta</label>
+                        <input type="date" id="hasta" class="form-control form-control-sm">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="destinatario">Destinatario</label>
+                        <select id="destinatario" class="form-control form-control-sm">
+                            <option value="">Todos</option>
+                            {% for d in destinatarios %}
+                                <option value="{{ d.id }}">{{ d.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="destino">Destino</label>
+                        <select id="destino" class="form-control form-control-sm">
+                            <option value="">Todos</option>
+                            {% for d in destinos %}
+                                <option value="{{ d.id }}">{{ d.descripcion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
 
-        <label>Destinatario:</label>
-        <select id="destinatario">
-            <option value="">Todos</option>
-            {% for d in destinatarios %}
-                <option value="{{ d.id }}">{{ d.descripcion }}</option>
-            {% endfor %}
-        </select>
+                <div class="d-flex flex-wrap justify-content-end">
+                    <button type="submit" class="btn btn-primary btn-sm mr-2 mb-1">
+                        <i class="fas fa-search mr-1"></i> Buscar
+                    </button>
+                    <button type="button" class="btn btn-info btn-sm mr-2 mb-1" onclick="window.print()">
+                        <i class="fas fa-print mr-1"></i> Imprimir
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-sm mb-1" onclick="window.location.href='/'">
+                        <i class="fas fa-home mr-1"></i> Inicio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <label>Destino:</label>
-        <select id="destino">
-            <option value="">Todos</option>
-            {% for d in destinos %}
-                <option value="{{ d.id }}">{{ d.descripcion }}</option>
-            {% endfor %}
-        </select>
+    <!-- Resultados -->
+    <div class="table-responsive">
+        <table class="table table-hover table-sm" id="tablaReporte">
+            <thead class="thead-light">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Material</th>
+                    <th class="text-right">Total</th>
+                    <th>Destinatario</th>
+                    <th>Destino</th>
+                    <th>Destino Texto</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-reporte">
+                <tr>
+                    <td colspan="6" class="text-center text-muted no-print">
+                        Seleccione los filtros y presione <strong>Buscar</strong>.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <button type="submit">Buscar</button>
-        <button type="button" onclick="window.print()">🖨️ Imprimir</button>
-        <button type="button" onclick="window.location.href='/'">Inicio</button>
-
-    </form>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Material</th>
-            <th>Total</th>
-            <th>Destinatario</th>
-            <th>Destino</th>
-            <th>Destino Texto </th>
-        </tr>
-    </thead>
-    <tbody id="tbody-reporte">
-        <!-- Se llena dinamicamente -->
-    </tbody>
-</table>
+{% endblock %}
 
-</body>
-</html>
+{% block js %}
+<script>
+    function textoSeleccionado(id) {
+        const sel = document.getElementById(id);
+        return sel.value ? sel.options[sel.selectedIndex].text : "Todos";
+    }
+
+    function cargarReporte() {
+        const desde = document.getElementById("desde").value;
+        const hasta = document.getElementById("hasta").value;
+        const destinatario = document.getElementById("destinatario").value;
+        const destino = document.getElementById("destino").value;
+
+        const url = `/remitos/reporte-materiales?desde=${desde}&hasta=${hasta}&destinatario=${destinatario}&destino=${destino}`;
+
+        // Resumen de filtros visible solo al imprimir
+        document.getElementById("resumenFiltros").textContent =
+            `Desde: ${desde || "-"}  |  Hasta: ${hasta || "-"}  |  ` +
+            `Destinatario: ${textoSeleccionado("destinatario")}  |  Destino: ${textoSeleccionado("destino")}`;
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById("tbody-reporte");
+                tbody.innerHTML = "";
+
+                if (!data.results.length) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No se encontraron resultados.</td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                data.results.forEach(item => {
+                    const row = `
+                        <tr>
+                            <td>${item.fecha}</td>
+                            <td>${item.material}</td>
+                            <td class="total">${item.total}</td>
+                            <td>${item.destinatario || ""}</td>
+                            <td>${item.destino || ""}</td>
+                            <td>${item.textodestino || ""}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            });
+    }
+</script>
+{% endblock %}
