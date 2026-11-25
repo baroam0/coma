@@ -31,13 +31,13 @@ class DocumentacionForm(forms.ModelForm):
         ]
 
         widgets = {            
-            'fechanota': forms.DateInput(attrs={
+            'fechanota': forms.DateInput(format='%Y-%m-%d', attrs={
                 'type': 'date',
                 'class': 'form-control form-control-user'
             }),
             'nota': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nro Nota'}),
             'tipo': forms.Select(attrs={'class': 'form-control'}),
-            'fechaexpediente': forms.DateInput(attrs={
+            'fechaexpediente': forms.DateInput(format='%Y-%m-%d', attrs={
                 'type': 'date',
                 'class': 'form-control form-control-user'
             }),
@@ -46,7 +46,7 @@ class DocumentacionForm(forms.ModelForm):
             'monto': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Monto'}),
             'contratista': forms.Select(attrs={'class': 'form-control'}),
             'decreto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Decreto'}),
-            'fechadecreto': forms.DateInput(attrs={
+            'fechadecreto': forms.DateInput(format='%Y-%m-%d', attrs={
                 'type': 'date',
                 'class': 'form-control form-control-user'
             }),
